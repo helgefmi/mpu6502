@@ -1,6 +1,6 @@
 CFLAGS=-O3 -Wall -Wextra
 SRC=src/Mpu6502.o src/main.o
-TARGET=nesmu
+TARGET=mpu6502
 CC=g++
 
 all: $(SRC)
