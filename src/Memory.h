@@ -12,8 +12,8 @@ class Memory
                 delete [] memory;
         }
 
-        inline void setByte(uint16_t, uint8_t);
-        inline void setWord(uint16_t, uint16_t);
+        inline void setByte(uint16_t, int8_t);
+        inline void setWord(uint16_t, int16_t);
         inline int8_t byteAt(uint16_t);
         inline int16_t wordAt(uint16_t);
 
@@ -35,19 +35,19 @@ inline int16_t Memory::wordAt(uint16_t offset) // {{{
 {
     return *((int16_t*)(memory + offset));
 } // }}}
-inline void Memory::setByte(uint16_t offset, uint8_t value) // {{{
+inline void Memory::setByte(uint16_t offset, int8_t value) // {{{
 {
     memory[offset] = value;
 } // }}}
-inline void Memory::setWord(uint16_t offset, uint16_t value) // {{{
+inline void Memory::setWord(uint16_t offset, int16_t value) // {{{
 {
-    *((uint16_t*)(memory + offset)) = value;
+    *((int16_t*)(memory + offset)) = value;
 } // }}}
 
 inline void Memory::reset() // {{{
 {
     for (int i = 0; i < size; ++i)
-        memory[i] = '\0';
+        memory[i] = 0;
 } // }}}
 
 inline int Memory::getSize() // {{{
