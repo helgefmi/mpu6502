@@ -6,6 +6,12 @@
 class Memory
 {
     public:
+        Memory(unsigned int size)
+        {
+            setSize(size);
+            memory = new uint8_t[size];
+            reset();
+        }
         ~Memory()
         {
             if (memory)
@@ -21,7 +27,7 @@ class Memory
 
         inline int getSize();
         inline void setSize(int);
-    protected:
+    private:
         uint8_t *memory;
         int size;
 };
@@ -46,7 +52,7 @@ inline void Memory::setWord(uint16_t offset, int16_t value) // {{{
 
 inline void Memory::reset() // {{{
 {
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < getSize(); ++i)
         memory[i] = 0;
 } // }}}
 

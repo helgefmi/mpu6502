@@ -7,12 +7,7 @@
 class Memory6502 : public Memory
 {
     public:
-        Memory6502(Mpu6502 *mpu) : mpu(mpu)
-        {
-            setSize(0x10000);
-            memory = new uint8_t[size];
-            reset();
-        }
+        Memory6502(Mpu6502 *mpu) : mpu(mpu), Memory(0x10000) { }
 
         inline int8_t get_immediate();
         inline int8_t get_zero_page();
