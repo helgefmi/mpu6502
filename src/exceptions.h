@@ -8,16 +8,16 @@
 class InvalidOpcodeException : public std::exception
 {
     public:
-        InvalidOpcodeException(int opcode) : opcode(opcode) {};
+        InvalidOpcodeException(const int opcode) : opcode(opcode) {};
         std::string what()
         {
             std::stringstream ss;
-            ss << "Invalid OpCode: ";
-            ss << opcode;
+            ss << "Invalid OpCode: 0x";
+            ss << std::hex << opcode;
             return ss.str();
         }
 
     private:
-        int opcode;
+        const int opcode;
 };
 #endif

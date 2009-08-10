@@ -18,7 +18,7 @@ void TestSuite::run(const std::string &path) // {{{
     fs::path fs_path(path);
     if (!fs::exists(fs_path))
     {
-        std::cerr << "Path not found: " << fs_path.file_string() << std::endl;
+        std::cerr << "Path not found: " << fs_path << std::endl;
         std::cerr << "Couldn't start testsuite :-/" << std::endl;
         return;
     }
@@ -61,7 +61,7 @@ void TestSuite::test_file(const fs::path &path) // {{{
         {
             getline(file_stream, line);
 
-            /* Break if we find an assertion, which represents the end of the assembly-section */
+            /* Break if we find an assertion */
             if (line.find("assert") == 0)
             {
                 asserts.push_back(line);
@@ -110,14 +110,14 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     unlink("asm.tmp");
     unlink("a.o65");
 
-    /* Tick through the code */
+    /* Step through the code */
     try
     {
-        /* I think the number of ticks will always be the number of code lines .. */
+        /* I think the number of steps will always be the number of code lines .. */
         int steps = std::count(code.begin(), code.end(), '\n');
         while (steps--)
         {
-            mpu.tick();
+            mpu.step();
         }
     }
     catch (InvalidOpcodeException &e)
@@ -138,7 +138,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     {
         std::istringstream is(*it);
 
-        /* Every assertion should be space delimited with the 3 sections, type, source, value */
+        /* Every assertion should be space delimited with 3 sections: type, source and value */
         std::string assertType, source, value;
         is >> assertType;
         is >> source;
@@ -147,21 +147,19 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
         bool assert_success = check_assertion(mpu, assertType, source, value);
 
         if (!assert_success)
-        {
             asserts_success = false;
-        }
     }
 
     return asserts_success;
 } // }}}
 bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertType, const std::string &str_source, const std::string &str_value) // {{{
 {
-    int source = -1, value = -2;
+    int source, value;
 
     /* We're comparing with a place in memory */
     if (str_source.find("mem.") == 0)
     {
-        /* Might be proceeded by 0x to indicate hex. strtol() takes care of this! */
+        /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
         int int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
         source = mpu.mem->byteAt(int_val);
@@ -199,12 +197,13 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
         return false;
     }
 
-    /* Might be proceeded by 0x to indicate hex. strtol() takes care of this! */
+    /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
     value = strtol(str_value.c_str(), 0, 0);
 
     if (source != value)
     {
-        std::cerr << "Failed assertion: '" << assertType << ' ' << str_source << ' ' << str_value << "'. " << source << " != " << value << std::endl;
+        std::cerr << "Failed assertion: '" << assertType << ' ' << str_source << ' ' << str_value << "'. "
+                  << source << " != " << value << std::endl;
         return false;
     }
     

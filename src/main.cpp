@@ -11,17 +11,16 @@ int main(int argc, char **argv)
 {
     Mpu6502 cpu;
 
-    /* Arguments -- will have values filled in by program_options */
     std::string tests_path;
+    static po::variables_map vm;
 
     /* Specify the valid arguments */
     static po::options_description args("Optional options");
-    static po::variables_map vm;
 
     args.add_options()
-        ("tests-path,p", po::value<std::string>(&tests_path)->default_value("tests/"),
+        ("test-path,p", po::value<std::string>(&tests_path)->default_value("tests/"),
             "Specify path to testsuite (directory or single file)")
-        ("run-tests,r", "Do the testsuite pointed at by tests-path")
+        ("run-tests,t", "Do the testsuite pointed at by tests-path")
         ("help,h", "Help")
     ;
 
@@ -42,7 +41,7 @@ int main(int argc, char **argv)
     if (vm.count("help"))
     {
         std::cout << args << std::endl;
-        return 1;
+        return 0;
     }
 
     /* --run-tests */
@@ -56,6 +55,7 @@ int main(int argc, char **argv)
         catch (std::exception &e)
         {
             std::cerr << e.what() << std::endl;
+            return 2;
         }
     }
 

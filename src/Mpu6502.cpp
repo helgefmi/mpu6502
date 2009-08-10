@@ -17,7 +17,7 @@ Mpu6502::~Mpu6502() // {{{
     delete mem;
 } // }}}
 
-void Mpu6502::load_binary_file(std::string fileName) // {{{
+void Mpu6502::load_binary_file(const std::string &fileName) // {{{
 {
     std::ifstream ifs(fileName.c_str(), std::iostream::binary | std::iostream::ate);
     if (!ifs.is_open())
@@ -53,13 +53,12 @@ void Mpu6502::reset() // {{{
 void Mpu6502::loop() // {{{
 {
 } // }}}
-int Mpu6502::tick() // {{{
+int Mpu6502::step() // {{{
 {
     /* Fetch opcode and increment pc */
     uint8_t opcode = mem->byteAt(reg.pc);
     reg.pc += 1;
 
-    /* Reset extra_cycles */
     extra_cycles = 0;
 
     switch (opcode)
@@ -351,7 +350,7 @@ int Mpu6502::tick() // {{{
     return op_cycles[opcode] + extra_cycles;
 } // }}}
 
-inline void Mpu6502::set_nz_flags(int8_t value) // {{{
+inline void Mpu6502::set_nz_flags(const int8_t value) // {{{
 {
     reg.pc &= ~(FLAG_ZERO | FLAG_NEGATIVE);
     if (value == 0)
@@ -364,13 +363,11 @@ std::string Mpu6502::to_string() // {{{
 {
     std::stringstream ss;
 
-    ss << '<';
-    ss <<  "AC:" << (int)reg.ac;
+    ss << "<AC:" << (int)reg.ac;
     ss << " PC:" << (int)reg.pc;
     ss << " X:"  << (int)reg.y;
     ss << " Y:"  << (int)reg.x;
-    ss << " SP:" << (int)reg.sp;
-    ss << '>';
+    ss << " SP:" << (int)reg.sp << '>';
 
     return ss.str();
 } // }}}

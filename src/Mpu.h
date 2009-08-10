@@ -9,9 +9,9 @@ class Mpu
 {
     public:
         virtual void reset() = 0;
-        virtual int tick() = 0;
+        virtual int step() = 0;
         virtual void loop() = 0;
-        virtual void load_binary_file(std::string) = 0;
+        virtual void load_binary_file(const std::string&) = 0;
 };
 
 #endif

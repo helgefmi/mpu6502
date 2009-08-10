@@ -26,20 +26,19 @@ class Mpu6502 : public Mpu
         static int op_cycles[];
 
         void reset();
-        int tick();
+        int step();
         void loop();
-        void load_binary_file(std::string);
+        void load_binary_file(const std::string&);
 
         std::string to_string();
 
     private:
-        /* Registers */
         registers_t reg;
 
         int extra_cycles;
         Memory6502 *mem;
 
-        inline void set_nz_flags(int8_t);
+        inline void set_nz_flags(const int8_t);
 };
 
 #endif
