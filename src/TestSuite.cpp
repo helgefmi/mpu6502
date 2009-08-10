@@ -161,7 +161,8 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     /* We're comparing with a place in memory */
     if (str_source.find("mem.") == 0)
     {
-        int int_val = strtol(str_source.substr(4).c_str(), 0, 16);
+        /* Might be proceeded by 0x to indicate hex. strtol() takes care of this! */
+        int int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
         source = mpu.mem->byteAt(int_val);
     }
