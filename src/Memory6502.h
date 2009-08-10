@@ -44,23 +44,23 @@ inline int16_t Memory6502::get_absolute() // {{{
 } // }}}
 inline int16_t Memory6502::get_absolute_x() // {{{
 {
-    int16_t from_mem = wordAt(mpu->reg.pc);
-    int16_t ret = from_mem + mpu->reg.x;
+    int16_t arg = wordAt(mpu->reg.pc);
+    int16_t arg_and_x = arg + mpu->reg.x;
 
-    if (ret & 0xFF00 != from_mem & 0xFF00)
+    if (arg_and_x & 0xFF00 != arg & 0xFF00)
         mpu->extra_cycles += 1;
 
-    return ret;
+    return arg_and_x;
 } // }}}
 inline int16_t Memory6502::get_absolute_y() // {{{
 {
-    int16_t from_mem = wordAt(mpu->reg.pc);
-    int16_t ret = from_mem + mpu->reg.y;
+    int16_t arg = wordAt(mpu->reg.pc);
+    int16_t arg_and_y = arg + mpu->reg.y;
 
-    if (ret & 0xFF00 != from_mem & 0xFF00)
+    if (arg_and_y & 0xFF00 != arg & 0xFF00)
         mpu->extra_cycles += 1;
 
-    return ret;
+    return arg_and_y;
 } // }}}
 inline int16_t Memory6502::get_indirect_x() // {{{
 {
@@ -68,7 +68,13 @@ inline int16_t Memory6502::get_indirect_x() // {{{
 } // }}}
 inline int16_t Memory6502::get_indirect_y() // {{{
 {
-    return 0;
+    int16_t arg = wordAt(byteAt(mpu->reg.pc));
+    int16_t arg_and_y = arg + mpu->reg.y;
+
+    if (arg_and_y & 0xFF00 != arg & 0xFF00)
+        mpu->extra_cycles += 1;
+
+    return arg_and_y;
 } // }}}
 
 #endif

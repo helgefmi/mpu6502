@@ -3,13 +3,21 @@
 
 #include <exception>
 #include <string>
+#include <sstream>
 
 class InvalidOpcodeException : public std::exception
 {
     public:
+        InvalidOpcodeException(int opcode) : opcode(opcode) {};
         std::string what()
         {
-            return "Invalid OpCode";
+            std::stringstream ss;
+            ss << "Invalid OpCode: ";
+            ss << opcode;
+            return ss.str();
         }
+
+    private:
+        int opcode;
 };
 #endif

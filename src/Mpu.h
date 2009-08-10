@@ -2,6 +2,7 @@
 #define __Mpu_H
 
 #include "Memory.h"
+#include <string>
 #include <stdint.h>
 
 class Mpu
@@ -10,6 +11,7 @@ class Mpu
         virtual void reset() = 0;
         virtual int tick() = 0;
         virtual void loop() = 0;
+        virtual void load_binary_file(std::string) = 0;
 };
 
 #endif

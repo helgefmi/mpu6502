@@ -1,4 +1,6 @@
 #include <sstream>
+#include <fstream>
+#include <iostream>
 
 #include "Mpu6502.h"
 #include "Memory6502.h"
@@ -15,6 +17,29 @@ Mpu6502::~Mpu6502() // {{{
     delete mem;
 } // }}}
 
+void Mpu6502::load_binary_file(std::string fileName) // {{{
+{
+    std::ifstream ifs(fileName.c_str(), std::iostream::binary | std::iostream::ate);
+    if (!ifs.is_open())
+    {
+        std::cerr << "Couldn't open file " << fileName << std::endl;
+        return;
+    }
+
+    /* Move the contents of the file into an array */
+    int size = ifs.tellg();
+    char *memblock = new char [size];
+    ifs.seekg(0, std::iostream::beg);
+    ifs.read(memblock, size);
+    ifs.close();
+
+    /* Then move the array buffer into the MPU's memory */
+    for (int i = 0; i < size; ++i)
+    {
+        mem->setByte(i, memblock[i]);
+    }
+
+} // }}}
 void Mpu6502::reset() // {{{
 {
     reg.x = 0;
@@ -320,7 +345,7 @@ int Mpu6502::tick() // {{{
             break;
         /* }}} */
         default:
-            throw InvalidOpcodeException();
+            throw InvalidOpcodeException(opcode);
     }
 
     return op_cycles[opcode] + extra_cycles;

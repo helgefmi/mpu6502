@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 class Memory6502;
+class TestSuite;
 typedef struct registers
 {
     uint16_t    pc;    /* Processor Status */
@@ -17,6 +18,7 @@ typedef struct registers
 class Mpu6502 : public Mpu
 {
     friend class Memory6502;
+    friend class TestSuite;
     public:
         Mpu6502();
         ~Mpu6502();
@@ -26,6 +28,7 @@ class Mpu6502 : public Mpu
         void reset();
         int tick();
         void loop();
+        void load_binary_file(std::string);
 
         std::string to_string();
 
