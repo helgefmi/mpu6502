@@ -9,7 +9,7 @@ class Memory
         Memory(unsigned int size)
         {
             setSize(size);
-            memory = new uint8_t[size];
+            memory = new int8_t[size];
             reset();
         }
         ~Memory()
@@ -28,7 +28,7 @@ class Memory
         inline int getSize();
         inline void setSize(int);
     private:
-        uint8_t *memory;
+        int8_t *memory;
         int size;
 };
 
