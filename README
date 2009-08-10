@@ -1,0 +1,2 @@
+To compile the files you need the libboost-program_options and libboost-fileseystem libraries (and development files). You might also need to edit the Makefile manually and remove the '-mt' prefix of these libraries.
+To run the tests, you need xa (6502/R65C02/65816 cross-assembler) somewhere in $PATH.
