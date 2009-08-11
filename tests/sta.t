@@ -6,6 +6,6 @@ assert mem.0x1000 12
 
 test sta_zero
     LDA #12
-    STA $10
+    STA $99
 assert reg.p 4
-assert mem.0x10 12
+assert mem.0x99 12
