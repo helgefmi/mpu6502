@@ -4,7 +4,7 @@ TARGET=mpu6502
 CC=g++
 
 all: $(SRC)
-	g++ -o $(TARGET) $(SRC) $(CFLAGS)
+	$(CC) -o $(TARGET) $(SRC) $(CFLAGS)
 
 clean:
 	find -name \*.o -exec rm {} \;

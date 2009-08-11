@@ -36,7 +36,7 @@ void Mpu6502::load_binary_file(const std::string &fileName) // {{{
     /* Then move the array buffer into the MPU's memory */
     for (int i = 0; i < size; ++i)
     {
-        mem->setByte(i, memblock[i]);
+        mem->setByte(i, (uint8_t) memblock[i]);
     }
 
 } // }}}
@@ -99,7 +99,7 @@ int Mpu6502::step() // {{{
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
-        case 0xB1: // LDA IND X
+        case 0xB1: // LDA IND Y
             reg.ac = mem->byteAt(mem->get_indirect_y());
             set_nz_flags(reg.ac);
             reg.pc += 1;
@@ -350,28 +350,26 @@ int Mpu6502::step() // {{{
     return op_cycles[opcode] + extra_cycles;
 } // }}}
 
-inline void Mpu6502::set_nz_flags(const int8_t value) // {{{
+inline void Mpu6502::set_nz_flags(const uint8_t value) // {{{
 {
-    reg.pc &= ~(FLAG_ZERO | FLAG_NEGATIVE);
-    if (value == 0)
-        reg.pc |= FLAG_ZERO;
-    else
-        reg.pc |= value & FLAG_NEGATIVE;
+    reg.ps[FLAG_ZERO] = (0 == value);
+    reg.ps[FLAG_NEGATIVE] = ((int8_t) value) < 0;
 } // }}}
 
-std::string Mpu6502::to_string() // {{{
+std::string Mpu6502::to_string() const // {{{
 {
     std::stringstream ss;
 
-    ss << "<AC:" << (int)reg.ac;
-    ss << " PC:" << (int)reg.pc;
-    ss << " X:"  << (int)reg.y;
-    ss << " Y:"  << (int)reg.x;
-    ss << " SP:" << (int)reg.sp << '>';
+    ss << "<mpu6502 " << this;
+    ss << " PC:" << (uint16_t) reg.pc;
+    ss << " PS:" << reg.ps;
+    ss << " SP:" << (uint16_t) reg.sp;
+    ss << " AC:" << (uint16_t) reg.ac;
+    ss << " X:"  << (uint16_t) reg.x;
+    ss << " Y:"  << (uint16_t) reg.y << '>';
 
     return ss.str();
 } // }}}
-
 int Mpu6502::op_cycles[] = { // {{{
     7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0,  // 00
     2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,  // 10

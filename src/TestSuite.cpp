@@ -1,6 +1,7 @@
 #include "TestSuite.h"
 #include "Mpu6502.h"
 #include "Memory6502.h"
+#include "defines.h"
 #include "exceptions.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -114,7 +115,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     try
     {
         /* I think the number of steps will always be the number of code lines .. */
-        int steps = std::count(code.begin(), code.end(), '\n');
+        unsigned int steps = std::count(code.begin(), code.end(), '\n');
         while (steps--)
         {
             mpu.step();
@@ -154,13 +155,13 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
 } // }}}
 bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertType, const std::string &str_source, const std::string &str_value) // {{{
 {
-    int source, value;
+    uint16_t source, value;
 
     /* We're comparing with a place in memory */
     if (str_source.find("mem.") == 0)
     {
         /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
-        int int_val = strtol(str_source.substr(4).c_str(), 0, 0);
+        uint16_t int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
         source = mpu.mem->byteAt(int_val);
     }
@@ -171,11 +172,14 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
         char char_val = str_source.at(4);
         switch (char_val)
         {
-            case 'a':
-                source = mpu.reg.ac;
-                break;
             case 'p':
                 source = mpu.reg.pc;
+                break;
+            case 's':
+                source = mpu.reg.sp;
+                break;
+            case 'a':
+                source = mpu.reg.ac;
                 break;
             case 'x':
                 source = mpu.reg.x;
@@ -183,8 +187,21 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
             case 'y':
                 source = mpu.reg.y;
                 break;
-            case 's':
-                source = mpu.reg.sp;
+            default:
+                std::cerr << "Invalid source for assertion: " << str_source << std::endl;
+                return false;
+        }
+    }
+    else if (str_source.find("flags.") == 0)
+    {
+        char char_val = str_source.at(6);
+        switch (char_val)
+        {
+            case 'z':
+                source = mpu.reg.ps[FLAG_ZERO];
+                break;
+            case 'n':
+                source = mpu.reg.ps[FLAG_NEGATIVE];
                 break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
@@ -193,7 +210,7 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     }
     else
     {
-        std::cerr << "Invalid source for assertion: " << source << std::endl;
+        std::cerr << "Invalid source for assertion: " << str_source << std::endl;
         return false;
     }
 
@@ -204,6 +221,7 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     {
         std::cerr << "Failed assertion: '" << assertType << ' ' << str_source << ' ' << str_value << "'. "
                   << source << " != " << value << std::endl;
+        std::cerr << mpu.to_string() << std::endl;
         return false;
     }
     
