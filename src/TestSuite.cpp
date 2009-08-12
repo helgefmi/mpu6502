@@ -95,7 +95,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     out << code;
     out.close();
 
-    bool compile_success = (0 == system("xa asm.tmp"));
+    bool compile_success = (0 == system("xa -CW asm.tmp"));
     if (!compile_success)
     {
         std::cerr << "Couldn't compile test:" << std::endl;

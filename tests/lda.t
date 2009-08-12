@@ -11,21 +11,29 @@ test lda_zero
 assert reg.p 8
 assert reg.a 0xAB
 
+test lda_zero_x
+    LDX #$A
+    LDA #$BC
+    STA $5A
+    LDA $50,X
+assert reg.p 8
+assert reg.a 0xBC
+
 test lda_abs
-    LDA #$AB
+    LDA #$EF
     STA $ABCD
     LDA #0
     LDA $ABCD
 assert reg.p 10
-assert reg.a 0xAB
+assert reg.a 0xEF
 
 test lda_abs_x
-    LDX #$A
-    LDA #$BC
-    STA $100A
-    LDA $1000,X
+    LDX #$CD
+    LDA #$EF
+    STA $ABCD
+    LDA $AB00,X
 assert reg.p 10
-assert reg.a 0xBC
+assert reg.a 0xEF
 
 test lda_abs_y
     LDA #$AB
@@ -37,13 +45,14 @@ assert reg.a 0xAB
 
 test lda_ind_x
     LDX #$3
-    LDA #$99
-    STA $53
     LDA #$AB
-    STA $99
+    STA $53
+    LDA #$CD
+    STA $AB
+    LDA #0
     LDA ($50,X)
-assert reg.p 12
-assert reg.a 0xAB
+assert reg.p 14
+assert reg.a 0xCD
 
 test lda_ind_x_abs
     LDX #$3
@@ -51,21 +60,23 @@ test lda_ind_x_abs
     STA $53
     LDA #$AB
     STA $54
-    LDA #$89
+    LDA #$EF
     STA $ABCD
+    LDA #0
     LDA ($50,X)
-assert reg.p 17
-assert reg.a 0x89
+assert reg.p 19
+assert reg.a 0xEF
 
 test lda_ind_y
     LDY #$3
     LDA #$AB
     STA $50
-    LDA #$89
+    LDA #$CD
     STA $AE
+    LDA #0
     LDA ($50),Y
-assert reg.p 12
-assert reg.a 0x89
+assert reg.p 14
+assert reg.a 0xCD
 
 test lda_ind_y_abs
     LDY #$2
@@ -73,8 +84,9 @@ test lda_ind_y_abs
     STA $50
     LDA #$AB
     STA $51
-    LDA #$89
+    LDA #$EF
     STA $ABCF
+    LDA #0
     LDA ($50),Y
-assert reg.a 0x89
-assert reg.p 17
+assert reg.p 19
+assert reg.a 0xEF
