@@ -6,8 +6,6 @@
 #include <stdint.h>
 #include <bitset>
 
-class Memory6502;
-class TestSuite;
 typedef struct registers
 {
     uint16_t        pc;    /* Program Counter */
@@ -17,15 +15,18 @@ typedef struct registers
     std::bitset<8>  ps;    /* Processor Status */
 } registers_t;
 
+class Memory6502;
+
 class Mpu6502 : public Mpu
 {
     friend class Memory6502;
     friend class TestSuite;
+
     public:
         Mpu6502();
         ~Mpu6502();
 
-        static int op_cycles[];
+        static const int op_cycles[];
 
         void reset();
         int step();

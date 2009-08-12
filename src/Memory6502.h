@@ -10,40 +10,40 @@ class Memory6502 : public Memory
     public:
         Memory6502(Mpu6502 *mpu) : mpu(mpu), Memory(0x10000) { }
 
-        inline uint8_t get_immediate();
-        inline uint8_t get_zero_page();
-        inline uint8_t get_zero_page_x();
-        inline uint8_t get_zero_page_y();
-        inline uint16_t get_absolute();
-        inline uint16_t get_absolute_x();
-        inline uint16_t get_absolute_y();
-        inline uint16_t get_indirect_x();
-        inline uint16_t get_indirect_y();
+        inline const uint8_t get_immediate() const;
+        inline const uint8_t get_zero_page() const;
+        inline const uint8_t get_zero_page_x() const;
+        inline const uint8_t get_zero_page_y() const;
+        inline const uint16_t get_absolute() const;
+        inline const uint16_t get_absolute_x() const;
+        inline const uint16_t get_absolute_y() const;
+        inline const uint16_t get_indirect_x() const;
+        inline const uint16_t get_indirect_y() const;
     private:
         Mpu6502 *mpu;
 };
 
-inline uint8_t Memory6502::get_immediate() // {{{
+inline const uint8_t Memory6502::get_immediate() const // {{{
 {
     return byteAt(mpu->reg.pc);
 } // }}}
-inline uint8_t Memory6502::get_zero_page() // {{{
+inline const uint8_t Memory6502::get_zero_page() const // {{{
 {
     return byteAt(mpu->reg.pc);
 } // }}}
-inline uint8_t Memory6502::get_zero_page_x() // {{{
+inline const uint8_t Memory6502::get_zero_page_x() const // {{{
 {
     return mpu->reg.x + byteAt(mpu->reg.pc);
 } // }}}
-inline uint8_t Memory6502::get_zero_page_y() // {{{
+inline const uint8_t Memory6502::get_zero_page_y() const // {{{
 {
     return mpu->reg.y + byteAt(mpu->reg.pc);
 } // }}}
-inline uint16_t Memory6502::get_absolute() // {{{
+inline const uint16_t Memory6502::get_absolute() const // {{{
 {
     return wordAt(mpu->reg.pc);
 } // }}}
-inline uint16_t Memory6502::get_absolute_x() // {{{
+inline const uint16_t Memory6502::get_absolute_x() const // {{{
 {
     uint16_t arg = wordAt(mpu->reg.pc);
     uint16_t arg_and_x = arg + mpu->reg.x;
@@ -53,7 +53,7 @@ inline uint16_t Memory6502::get_absolute_x() // {{{
 
     return arg_and_x;
 } // }}}
-inline uint16_t Memory6502::get_absolute_y() // {{{
+inline const uint16_t Memory6502::get_absolute_y() const // {{{
 {
     uint16_t arg = wordAt(mpu->reg.pc);
     uint16_t arg_and_y = arg + mpu->reg.y;
@@ -63,11 +63,11 @@ inline uint16_t Memory6502::get_absolute_y() // {{{
 
     return arg_and_y;
 } // }}}
-inline uint16_t Memory6502::get_indirect_x() // {{{
+inline const uint16_t Memory6502::get_indirect_x() const // {{{
 {
     return wordAt(get_zero_page_x());
 } // }}}
-inline uint16_t Memory6502::get_indirect_y() // {{{
+inline const uint16_t Memory6502::get_indirect_y() const // {{{
 {
     uint16_t arg = wordAt(byteAt(mpu->reg.pc));
     uint16_t arg_and_y = arg + mpu->reg.y;

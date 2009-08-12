@@ -157,18 +157,19 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
 {
     uint16_t source, value;
 
-    /* We're comparing with a place in memory */
     if (str_source.find("mem.") == 0)
     {
+        /* We're comparing with a place in memory */
+
         /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
         uint16_t int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
         source = mpu.mem->byteAt(int_val);
     }
 
-    /* We're comparing with a register */
     else if (str_source.find("reg.") == 0)
     {
+        /* We're comparing with a register */
         char char_val = str_source.at(4);
         switch (char_val)
         {
@@ -194,6 +195,7 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     }
     else if (str_source.find("flags.") == 0)
     {
+        /* We're comparing with the Process Status register */
         char char_val = str_source.at(6);
         switch (char_val)
         {

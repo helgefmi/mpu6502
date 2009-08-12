@@ -4,8 +4,8 @@
 
 #include "Mpu6502.h"
 #include "Memory6502.h"
-#include "defines.h"
 #include "exceptions.h"
+#include "defines.h"
 
 Mpu6502::Mpu6502() // {{{
 {
@@ -46,6 +46,7 @@ void Mpu6502::reset() // {{{
     reg.y = 0;
     reg.ac = 0;
     reg.pc = 0;
+    reg.ps = 0;
     reg.sp = 0xFF;
 
     mem->reset();
@@ -370,7 +371,7 @@ std::string Mpu6502::to_string() const // {{{
 
     return ss.str();
 } // }}}
-int Mpu6502::op_cycles[] = { // {{{
+const int Mpu6502::op_cycles[] = { // {{{
     7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0,  // 00
     2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,  // 10
     6, 6, 0, 0, 3, 3, 5, 0, 4, 2, 2, 0, 4, 4, 6, 0,  // 20

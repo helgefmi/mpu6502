@@ -20,12 +20,12 @@ class Memory
 
         inline void setByte(uint16_t, uint8_t);
         inline void setWord(uint16_t, uint16_t);
-        inline uint8_t byteAt(uint16_t);
-        inline uint16_t wordAt(uint16_t);
+        inline uint8_t byteAt(uint16_t) const;
+        inline uint16_t wordAt(uint16_t) const;
 
         inline void reset();
 
-        inline int getSize();
+        inline int getSize() const;
         inline void setSize(int);
     private:
         uint8_t *memory;
@@ -33,11 +33,11 @@ class Memory
 };
 
 /* inlines */
-inline uint8_t Memory::byteAt(uint16_t offset) // {{{
+inline uint8_t Memory::byteAt(uint16_t offset) const // {{{
 {
     return memory[offset];
 } // }}}
-inline uint16_t Memory::wordAt(uint16_t offset) // {{{
+inline uint16_t Memory::wordAt(uint16_t offset) const // {{{
 {
     return byteAt(offset) + (byteAt(offset + 1) << 8);
 } // }}}
@@ -57,7 +57,7 @@ inline void Memory::reset() // {{{
         memory[i] = 0;
 } // }}}
 
-inline int Memory::getSize() // {{{
+inline int Memory::getSize() const // {{{
 {
     return size;
 } // }}}
