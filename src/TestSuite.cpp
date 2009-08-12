@@ -17,6 +17,7 @@ namespace fs = boost::filesystem;
 void TestSuite::run(const std::string &path) // {{{
 {
     fs::path fs_path(path);
+
     if (!fs::exists(fs_path))
     {
         std::cerr << "Path not found: " << fs_path << std::endl;
@@ -24,6 +25,8 @@ void TestSuite::run(const std::string &path) // {{{
         return;
     }
 
+    successive_tests = 0;
+    failed_tests = 0;
     for (fs::basic_recursive_directory_iterator<fs::path> it(fs_path), end; it != end; ++it)
     {
         if (fs::extension(*it) == ".t")
@@ -32,6 +35,8 @@ void TestSuite::run(const std::string &path) // {{{
             test_file(it_path);
         }
     }
+
+    std::cout << std::endl << "Failed " << failed_tests << "/" << (failed_tests + successive_tests) << " tests" << std::endl;
 } // }}}
 void TestSuite::test_file(const fs::path &path) // {{{
 {
@@ -84,7 +89,16 @@ void TestSuite::test_file(const fs::path &path) // {{{
         } while (!file_stream.eof());
 
         bool was_success = run_test(code, asserts);
-        std::cout << path << ", " << name << (was_success ? ": SUCCESS" : ": FAIL") << std::endl;
+
+        if (was_success)
+        {
+            ++successive_tests;
+        }
+        else
+        {
+            std::cout << path << ", " << name << ": FAIL" << std::endl;
+            ++failed_tests;
+        }
     }
 
     file_stream.close();
@@ -115,6 +129,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     try
     {
         /* I think the number of steps will always be the number of code lines .. */
+        /* TODO: Fix this? Might want to use more complex assembly sometime.. */
         unsigned int steps = std::count(code.begin(), code.end(), '\n');
         while (steps--)
         {
@@ -160,11 +175,10 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     if (str_source.find("mem.") == 0)
     {
         /* We're comparing with a place in memory */
-
         /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
         uint16_t int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
-        source = mpu.mem->byteAt(int_val);
+        source = mpu.mem->get_byte(int_val);
     }
 
     else if (str_source.find("reg.") == 0)

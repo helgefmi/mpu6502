@@ -17,6 +17,9 @@ class TestSuite
         void test_file(const fs::path&);
         bool run_test(const std::string&, const std::vector<std::string>&);
         bool check_assertion(const Mpu6502&, const std::string&, const std::string&, const std::string&);
+
+        int successive_tests;
+        int failed_tests;
 };
 
 #endif

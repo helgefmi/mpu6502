@@ -2,6 +2,7 @@
 #define __6502_H
 
 #include "Mpu.h"
+#include "defines.h"
 #include <string>
 #include <stdint.h>
 #include <bitset>
@@ -26,10 +27,12 @@ class Mpu6502 : public Mpu
         Mpu6502();
         ~Mpu6502();
 
+#if 0
         static const int op_cycles[];
+#endif
 
         void reset();
-        int step();
+        void step();
         void loop();
         void load_binary_file(const std::string&);
 
@@ -38,10 +41,16 @@ class Mpu6502 : public Mpu
     private:
         registers_t reg;
 
-        int extra_cycles;
         Memory6502 *mem;
 
         inline void set_nz_flags(const uint8_t);
 };
+
+/* Inlines */
+inline void Mpu6502::set_nz_flags(const uint8_t value) // {{{
+{
+    reg.ps[FLAG_ZERO] = (0 == value);
+    reg.ps[FLAG_NEGATIVE] = ((int8_t) value) < 0;
+} // }}}
 
 #endif

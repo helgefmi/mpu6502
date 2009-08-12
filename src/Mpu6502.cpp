@@ -1,11 +1,10 @@
-#include <sstream>
-#include <fstream>
-#include <iostream>
-
 #include "Mpu6502.h"
 #include "Memory6502.h"
 #include "exceptions.h"
 #include "defines.h"
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
 Mpu6502::Mpu6502() // {{{
 {
@@ -17,12 +16,13 @@ Mpu6502::~Mpu6502() // {{{
     delete mem;
 } // }}}
 
-void Mpu6502::load_binary_file(const std::string &fileName) // {{{
+void Mpu6502::load_binary_file(const std::string &filename) // {{{
 {
-    std::ifstream ifs(fileName.c_str(), std::iostream::binary | std::iostream::ate);
+    std::ifstream ifs(filename.c_str(), std::iostream::binary | std::iostream::ate);
+
     if (!ifs.is_open())
     {
-        std::cerr << "Couldn't open file " << fileName << std::endl;
+        std::cerr << "Couldn't open file " << filename << std::endl;
         return;
     }
 
@@ -36,7 +36,7 @@ void Mpu6502::load_binary_file(const std::string &fileName) // {{{
     /* Then move the array buffer into the MPU's memory */
     for (int i = 0; i < size; ++i)
     {
-        mem->setByte(i, (uint8_t) memblock[i]);
+        mem->set_byte(i, (uint8_t) memblock[i]);
     }
 
 } // }}}
@@ -54,13 +54,11 @@ void Mpu6502::reset() // {{{
 void Mpu6502::loop() // {{{
 {
 } // }}}
-int Mpu6502::step() // {{{
+void Mpu6502::step() // {{{
 {
     /* Fetch opcode and increment pc */
-    uint8_t opcode = mem->byteAt(reg.pc);
+    uint8_t opcode = mem->get_byte(reg.pc);
     reg.pc += 1;
-
-    extra_cycles = 0;
 
     switch (opcode)
     {
@@ -71,37 +69,37 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0xA5: // LDA ZERO
-            reg.ac = mem->byteAt(mem->get_zero_page());
+            reg.ac = mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0xB5: // LDA ZERO X
-            reg.ac = mem->byteAt(mem->get_zero_page_x());
+            reg.ac = mem->get_byte(mem->get_zero_page_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0xAD: // LDA ABS
-            reg.ac = mem->byteAt(mem->get_absolute());
+            reg.ac = mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0xBD: // LDA ABS X
-            reg.ac = mem->byteAt(mem->get_absolute_x());
+            reg.ac = mem->get_byte(mem->get_absolute_x());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0xB9: // LDA ABS Y
-            reg.ac = mem->byteAt(mem->get_absolute_y());
+            reg.ac = mem->get_byte(mem->get_absolute_y());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0xA1: // LDA IND X
-            reg.ac = mem->byteAt(mem->get_indirect_x());
+            reg.ac = mem->get_byte(mem->get_indirect_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0xB1: // LDA IND Y
-            reg.ac = mem->byteAt(mem->get_indirect_y());
+            reg.ac = mem->get_byte(mem->get_indirect_y());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
@@ -113,22 +111,22 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0xA6: // LDX ZERO
-            reg.x = mem->byteAt(mem->get_zero_page());
+            reg.x = mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.x);
             reg.pc += 1;
             break;
         case 0xB6: // LDX ZERO Y
-            reg.x = mem->byteAt(mem->get_zero_page_y());
+            reg.x = mem->get_byte(mem->get_zero_page_y());
             set_nz_flags(reg.x);
             reg.pc += 1;
             break;
         case 0xAE: // LDX ABS
-            reg.x = mem->byteAt(mem->get_absolute());
+            reg.x = mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.x);
             reg.pc += 2;
             break;
         case 0xBE: // LDX ABS Y
-            reg.x = mem->byteAt(mem->get_absolute_y());
+            reg.x = mem->get_byte(mem->get_absolute_y());
             set_nz_flags(reg.x);
             reg.pc += 2;
             break;
@@ -140,81 +138,81 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0xA4: // LDY ZERO
-            reg.y = mem->byteAt(mem->get_zero_page());
+            reg.y = mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.y);
             reg.pc += 1;
             break;
         case 0xB4: // LDY ZERO X
-            reg.y = mem->byteAt(mem->get_zero_page_x());
+            reg.y = mem->get_byte(mem->get_zero_page_x());
             set_nz_flags(reg.y);
             reg.pc += 1;
             break;
         case 0xAC: // LDY ABS
-            reg.y = mem->byteAt(mem->get_absolute());
+            reg.y = mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.y);
             reg.pc += 2;
             break;
         case 0xBC: // LDY ABS X
-            reg.y = mem->byteAt(mem->get_absolute_x());
+            reg.y = mem->get_byte(mem->get_absolute_x());
             set_nz_flags(reg.y);
             reg.pc += 2;
             break;
         /* }}} */
         /* STA (7) {{{ */
         case 0x85: // STA ZERO
-            mem->setByte(mem->get_zero_page(), reg.ac);
+            mem->set_byte(mem->get_zero_page(), reg.ac);
             reg.pc += 1;
             break;
         case 0x95: // STA ZERO X
-            mem->setByte(mem->get_zero_page_x(), reg.ac);
+            mem->set_byte(mem->get_zero_page_x(), reg.ac);
             reg.pc += 1;
             break;
         case 0x8D: // STA ABS
-            mem->setByte(mem->get_absolute(), reg.ac);
+            mem->set_byte(mem->get_absolute(), reg.ac);
             reg.pc += 2;
             break;
         case 0x9D: // STA ABS X
-            mem->setByte(mem->get_absolute_x(), reg.ac);
+            mem->set_byte(mem->get_absolute_x(), reg.ac);
             reg.pc += 2;
             break;
         case 0x99: // STA ABS Y
-            mem->setByte(mem->get_absolute_y(), reg.ac);
+            mem->set_byte(mem->get_absolute_y(), reg.ac);
             reg.pc += 2;
             break;
         case 0x81: // STA IND X
-            mem->setByte(mem->get_indirect_x(), reg.ac);
+            mem->set_byte(mem->get_indirect_x(), reg.ac);
             reg.pc += 1;
             break;
         case 0x91: // STA IND Y
-            mem->setByte(mem->get_indirect_y(), reg.ac);
+            mem->set_byte(mem->get_indirect_y(), reg.ac);
             reg.pc += 1;
             break;
         /* }}} */
         /* STX (3) {{{ */
         case 0x86: // STX ZERO
-            mem->setByte(mem->get_zero_page(), reg.x);
+            mem->set_byte(mem->get_zero_page(), reg.x);
             reg.pc += 1;
             break;
         case 0x96: // STX ZERO Y
-            mem->setByte(mem->get_zero_page_y(), reg.x);
+            mem->set_byte(mem->get_zero_page_y(), reg.x);
             reg.pc += 1;
             break;
         case 0x8E: // STX ABS
-            mem->setByte(mem->get_absolute(), reg.x);
+            mem->set_byte(mem->get_absolute(), reg.x);
             reg.pc += 2;
             break;
         /* }}} */
         /* STY (3) {{{ */
         case 0x84: // STY ZERO
-            mem->setByte(mem->get_zero_page(), reg.y);
+            mem->set_byte(mem->get_zero_page(), reg.y);
             reg.pc += 1;
             break;
         case 0x94: // STY ZERO X
-            mem->setByte(mem->get_zero_page_x(), reg.y);
+            mem->set_byte(mem->get_zero_page_x(), reg.y);
             reg.pc += 1;
             break;
         case 0x8C: // STY ABS
-            mem->setByte(mem->get_absolute(), reg.y);
+            mem->set_byte(mem->get_absolute(), reg.y);
             reg.pc += 2;
             break;
         /* }}} */
@@ -225,37 +223,37 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0x25: // AND ZERO
-            reg.ac &= mem->byteAt(mem->get_zero_page());
+            reg.ac &= mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x35: // AND ZERO X
-            reg.ac &= mem->byteAt(mem->get_zero_page_x());
+            reg.ac &= mem->get_byte(mem->get_zero_page_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x2D: // AND ABS
-            reg.ac &= mem->byteAt(mem->get_absolute());
+            reg.ac &= mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x3D: // AND ABS X
-            reg.ac &= mem->byteAt(mem->get_absolute_x());
+            reg.ac &= mem->get_byte(mem->get_absolute_x());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x39: // AND ABS Y
-            reg.ac &= mem->byteAt(mem->get_absolute_y());
+            reg.ac &= mem->get_byte(mem->get_absolute_y());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x21: // AND IND X
-            reg.ac &= mem->byteAt(mem->get_indirect_x());
+            reg.ac &= mem->get_byte(mem->get_indirect_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x31: // AND IND Y
-            reg.ac &= mem->byteAt(mem->get_indirect_y());
+            reg.ac &= mem->get_byte(mem->get_indirect_y());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
@@ -267,37 +265,37 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0x05: // ORA ZERO
-            reg.ac |= mem->byteAt(mem->get_zero_page());
+            reg.ac |= mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x15: // ORA ZERO X
-            reg.ac |= mem->byteAt(mem->get_zero_page_x());
+            reg.ac |= mem->get_byte(mem->get_zero_page_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x0D: // ORA ABS
-            reg.ac |= mem->byteAt(mem->get_absolute());
+            reg.ac |= mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x1D: // ORA ABS X
-            reg.ac |= mem->byteAt(mem->get_absolute_x());
+            reg.ac |= mem->get_byte(mem->get_absolute_x());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x19: // ORA ABS Y
-            reg.ac |= mem->byteAt(mem->get_absolute_y());
+            reg.ac |= mem->get_byte(mem->get_absolute_y());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x01: // ORA IND X
-            reg.ac |= mem->byteAt(mem->get_indirect_x());
+            reg.ac |= mem->get_byte(mem->get_indirect_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x11: // ORA IND Y
-            reg.ac |= mem->byteAt(mem->get_indirect_y());
+            reg.ac |= mem->get_byte(mem->get_indirect_y());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
@@ -309,37 +307,37 @@ int Mpu6502::step() // {{{
             reg.pc += 1;
             break;
         case 0x45: // EOR ZERO
-            reg.ac ^= mem->byteAt(mem->get_zero_page());
+            reg.ac ^= mem->get_byte(mem->get_zero_page());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x55: // EOR ZERO X
-            reg.ac ^= mem->byteAt(mem->get_zero_page_x());
+            reg.ac ^= mem->get_byte(mem->get_zero_page_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x4D: // EOR ABS
-            reg.ac ^= mem->byteAt(mem->get_absolute());
+            reg.ac ^= mem->get_byte(mem->get_absolute());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x5D: // EOR ABS X
-            reg.ac ^= mem->byteAt(mem->get_absolute_x());
+            reg.ac ^= mem->get_byte(mem->get_absolute_x());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x59: // EOR ABS Y
-            reg.ac ^= mem->byteAt(mem->get_absolute_y());
+            reg.ac ^= mem->get_byte(mem->get_absolute_y());
             set_nz_flags(reg.ac);
             reg.pc += 2;
             break;
         case 0x41: // EOR IND X
-            reg.ac ^= mem->byteAt(mem->get_indirect_x());
+            reg.ac ^= mem->get_byte(mem->get_indirect_x());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
         case 0x51: // EOR IND Y
-            reg.ac ^= mem->byteAt(mem->get_indirect_y());
+            reg.ac ^= mem->get_byte(mem->get_indirect_y());
             set_nz_flags(reg.ac);
             reg.pc += 1;
             break;
@@ -347,14 +345,6 @@ int Mpu6502::step() // {{{
         default:
             throw InvalidOpcodeException(opcode);
     }
-
-    return op_cycles[opcode] + extra_cycles;
-} // }}}
-
-inline void Mpu6502::set_nz_flags(const uint8_t value) // {{{
-{
-    reg.ps[FLAG_ZERO] = (0 == value);
-    reg.ps[FLAG_NEGATIVE] = ((int8_t) value) < 0;
 } // }}}
 
 std::string Mpu6502::to_string() const // {{{
@@ -371,6 +361,8 @@ std::string Mpu6502::to_string() const // {{{
 
     return ss.str();
 } // }}}
+
+#if 0
 const int Mpu6502::op_cycles[] = { // {{{
     7, 6, 0, 0, 0, 3, 5, 0, 3, 2, 2, 0, 0, 4, 6, 0,  // 00
     2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0,  // 10
@@ -389,3 +381,4 @@ const int Mpu6502::op_cycles[] = { // {{{
     2, 6, 0, 0, 3, 3, 5, 0, 2, 2, 2, 0, 4, 4, 6, 0,  // E0
     2, 5, 0, 0, 0, 4, 6, 0, 2, 4, 0, 0, 0, 4, 7, 0   // F0
 }; // }}}
+#endif
