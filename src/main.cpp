@@ -9,8 +9,6 @@ namespace po = boost::program_options;
 
 int main(int argc, char **argv)
 {
-    Mpu6502 cpu;
-
     std::string tests_path;
     static po::variables_map vm;
 

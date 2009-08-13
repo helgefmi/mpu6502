@@ -14,6 +14,15 @@
 
 namespace fs = boost::filesystem;
 
+TestSuite::TestSuite() // {{{
+{
+    mpu = new Mpu6502();
+} // }}}
+TestSuite::~TestSuite() // {{{
+{
+    delete mpu;
+} // }}}
+
 void TestSuite::run(const std::string &path) // {{{
 {
     fs::path fs_path(path);
@@ -119,8 +128,8 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     }
 
     /* Load the contents into the MPU */
-    Mpu6502 mpu;
-    mpu.load_binary_file("a.o65");
+    mpu->reset();
+    mpu->load_binary_file("a.o65");
 
     unlink("asm.tmp");
     unlink("a.o65");
@@ -133,7 +142,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
         unsigned int steps = std::count(code.begin(), code.end(), '\n');
         while (steps--)
         {
-            mpu.step();
+            mpu->step();
         }
     }
     catch (InvalidOpcodeException &e)
@@ -160,7 +169,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
         is >> source;
         is >> value;
 
-        bool assert_success = check_assertion(mpu, assertType, source, value);
+        bool assert_success = check_assertion(assertType, source, value);
 
         if (!assert_success)
             asserts_success = false;
@@ -168,7 +177,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
 
     return asserts_success;
 } // }}}
-bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertType, const std::string &str_source, const std::string &str_value) // {{{
+bool TestSuite::check_assertion(const std::string &assertType, const std::string &str_source, const std::string &str_value) // {{{
 {
     uint16_t source, value;
 
@@ -178,7 +187,7 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
         /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
         uint16_t int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
-        source = mpu.mem->get_byte(int_val);
+        source = mpu->mem->get_byte(int_val);
     }
 
     else if (str_source.find("reg.") == 0)
@@ -188,19 +197,19 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
         switch (char_val)
         {
             case 'p':
-                source = mpu.reg.pc;
+                source = mpu->reg.pc;
                 break;
             case 's':
-                source = mpu.reg.sp;
+                source = mpu->reg.sp;
                 break;
             case 'a':
-                source = mpu.reg.ac;
+                source = mpu->reg.ac;
                 break;
             case 'x':
-                source = mpu.reg.x;
+                source = mpu->reg.x;
                 break;
             case 'y':
-                source = mpu.reg.y;
+                source = mpu->reg.y;
                 break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
@@ -214,10 +223,10 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
         switch (char_val)
         {
             case 'z':
-                source = mpu.reg.ps[FLAG_ZERO];
+                source = mpu->reg.ps[FLAG_ZERO];
                 break;
             case 'n':
-                source = mpu.reg.ps[FLAG_NEGATIVE];
+                source = mpu->reg.ps[FLAG_NEGATIVE];
                 break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
@@ -237,7 +246,7 @@ bool TestSuite::check_assertion(const Mpu6502 &mpu, const std::string &assertTyp
     {
         std::cerr << "Failed assertion: '" << assertType << ' ' << str_source << ' ' << str_value << "'. "
                   << source << " != " << value << std::endl;
-        std::cerr << mpu.to_string() << std::endl;
+        std::cerr << mpu->to_string() << std::endl;
         return false;
     }
     

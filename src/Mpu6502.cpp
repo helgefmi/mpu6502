@@ -27,18 +27,8 @@ void Mpu6502::load_binary_file(const std::string &filename) // {{{
     }
 
     /* Move the contents of the file into an array */
-    int size = ifs.tellg();
-    char *memblock = new char [size];
-    ifs.seekg(0, std::iostream::beg);
-    ifs.read(memblock, size);
+    mem->copy_from_istream(ifs);
     ifs.close();
-
-    /* Then move the array buffer into the MPU's memory */
-    for (int i = 0; i < size; ++i)
-    {
-        mem->set_byte(i, (uint8_t) memblock[i]);
-    }
-
 } // }}}
 void Mpu6502::reset() // {{{
 {

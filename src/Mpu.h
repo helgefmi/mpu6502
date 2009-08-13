@@ -1,9 +1,7 @@
 #ifndef __Mpu_H
 #define __Mpu_H
 
-#include "Memory.h"
 #include <string>
-#include <stdint.h>
 
 class Mpu
 {

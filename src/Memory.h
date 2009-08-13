@@ -2,6 +2,8 @@
 #define __MEMORY_H
 
 #include <stdint.h>
+#include <istream>
+#include <cstring>
 
 class Memory
 {
@@ -12,20 +14,21 @@ class Memory
             memory = new uint8_t[size];
             reset();
         }
+
         ~Memory()
         {
-            if (memory)
-                delete [] memory;
+            delete [] memory;
         }
 
-        inline void set_byte(uint16_t, uint8_t);
-        inline void set_word(uint16_t, uint16_t);
-        inline uint8_t get_byte(uint16_t) const;
-        inline uint16_t get_word(uint16_t) const;
+        inline void set_byte(const uint16_t, const uint8_t);
+        inline void set_word(const uint16_t, const uint16_t);
+        inline uint8_t get_byte(const uint16_t) const;
+        inline uint16_t get_word(const uint16_t) const;
 
         inline void reset();
+        void copy_from_istream(std::istream &ifs);
 
-        inline int getSize() const;
+        inline int get_size() const;
         inline void set_size(int);
     private:
         uint8_t *memory;
@@ -33,19 +36,19 @@ class Memory
 };
 
 /* inlines */
-inline uint8_t Memory::get_byte(uint16_t offset) const // {{{
+inline uint8_t Memory::get_byte(const uint16_t offset) const // {{{
 {
     return memory[offset];
 } // }}}
-inline uint16_t Memory::get_word(uint16_t offset) const // {{{
+inline uint16_t Memory::get_word(const uint16_t offset) const // {{{
 {
     return get_byte(offset) + (get_byte(offset + 1) << 8);
 } // }}}
-inline void Memory::set_byte(uint16_t offset, uint8_t value) // {{{
+inline void Memory::set_byte(const uint16_t offset, const uint8_t value) // {{{
 {
     memory[offset] = value;
 } // }}}
-inline void Memory::set_word(uint16_t offset, uint16_t value) // {{{
+inline void Memory::set_word(const uint16_t offset, const uint16_t value) // {{{
 {
     memory[offset] = value & 0xFF;
     memory[offset+1] = value >> 8;
@@ -53,11 +56,10 @@ inline void Memory::set_word(uint16_t offset, uint16_t value) // {{{
 
 inline void Memory::reset() // {{{
 {
-    for (int i = 0; i < getSize(); ++i)
-        memory[i] = 0;
+    memset(memory, 0, size);
 } // }}}
 
-inline int Memory::getSize() const // {{{
+inline int Memory::get_size() const // {{{
 {
     return size;
 } // }}}
