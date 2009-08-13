@@ -8,9 +8,8 @@
 class Memory
 {
     public:
-        Memory(unsigned int size)
+        Memory(unsigned int size) : size(size)
         {
-            set_size(size);
             memory = new uint8_t[size];
             reset();
         }
@@ -29,7 +28,6 @@ class Memory
         void copy_from_istream(std::istream &ifs);
 
         inline int get_size() const;
-        inline void set_size(int);
     private:
         uint8_t *memory;
         int size;
@@ -62,10 +60,6 @@ inline void Memory::reset() // {{{
 inline int Memory::get_size() const // {{{
 {
     return size;
-} // }}}
-inline void Memory::set_size(int size) // {{{
-{
-    this->size = size;
 } // }}}
 
 #endif
