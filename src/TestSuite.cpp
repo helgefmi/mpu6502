@@ -228,6 +228,18 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
             case 'n':
                 source = mpu->reg.ps[FLAG_NEGATIVE];
                 break;
+            case 'c':
+                source = mpu->reg.ps[FLAG_CARRY];
+                break;
+            case 'd':
+                source = mpu->reg.ps[FLAG_DECIMAL];
+                break;
+            case 'i':
+                source = mpu->reg.ps[FLAG_INTERRUPT];
+                break;
+            case 'v':
+                source = mpu->reg.ps[FLAG_OVERFLOW];
+                break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
                 return false;
