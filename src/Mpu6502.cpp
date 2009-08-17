@@ -68,7 +68,9 @@ void Mpu6502::step() // {{{
     uint8_t opcode = mem->get_byte(reg.pc);
     reg.pc += 1;
 
-    uint8_t byte;
+    int8_t byte;
+    uint8_t ubyte;
+    uint16_t uword;
     switch (opcode)
     {
         /* LDA (8) {{{ */
@@ -305,24 +307,100 @@ void Mpu6502::step() // {{{
         /* }}} */
         /* BIT (2) {{{ */
         case 0x24: // BIT ZERO
-            byte = mem->get_byte(mem->get_zero_page());
+            ubyte = mem->get_byte(mem->get_zero_page());
             goto bit_op;
         case 0x2C: // BIT ABS
-            byte = mem->get_byte(mem->get_absolute());
+            ubyte = mem->get_byte(mem->get_absolute());
             reg.pc += 1;
         bit_op:
             reg.pc += 1;
-            reg.ps[FLAG_ZERO] = 0 == (byte & reg.ac);
-            reg.ps[FLAG_NEGATIVE] = ((int8_t) byte) < 0;
-            reg.ps[FLAG_OVERFLOW] = (byte & (1 << 6)) ? 1 : 0;
+            reg.ps[FLAG_ZERO] = 0 == (ubyte & reg.ac);
+            reg.ps[FLAG_NEGATIVE] = ((int8_t) ubyte) < 0;
+            reg.ps[FLAG_OVERFLOW] = (ubyte & (1 << 6)) ? 1 : 0;
             break;
         /* }}} */
-        /* ADC (2) {{{ */
+        /* ADC (8) {{{ */
         case 0x69: // ADC IMM
-            byte = mem->get_immediate();
+            ubyte = mem->get_immediate();
             goto adc_op_1;
+        case 0x65: // ADC ZERO
+            ubyte = mem->get_byte(mem->get_zero_page());
+            goto adc_op_1;
+        case 0x75: // ADC ZERO X
+            ubyte = mem->get_byte(mem->get_zero_page_x());
+            goto adc_op_1;
+        case 0x6D: // ADC ABS
+            ubyte = mem->get_byte(mem->get_absolute());
+            goto adc_op_2;
+        case 0x7D: // ADC ABS X
+            ubyte = mem->get_byte(mem->get_absolute_x());
+            goto adc_op_2;
+        case 0x79: // ADC ABS Y
+            ubyte = mem->get_byte(mem->get_absolute_y());
+            goto adc_op_2;
+        case 0x61: // ADC IND X
+            ubyte = mem->get_byte(mem->get_indirect_x());
+            goto adc_op_1;
+        case 0x71: // ADC IND Y
+            ubyte = mem->get_byte(mem->get_indirect_y());
+            goto adc_op_1;
+
+        adc_op_2:
+            reg.pc += 1;
         adc_op_1:
             reg.pc += 1;
+
+            uword = reg.ac + ubyte;
+            if (reg.ps[FLAG_CARRY])
+                uword += 1;
+
+            if (uword > 0xFF)
+                reg.ps[FLAG_CARRY] = 1;
+
+            if (((int8_t) uword < 0) != ((int8_t) reg.ac < 0))
+                reg.ps[FLAG_OVERFLOW] = 1;
+
+            reg.ac = uword;
+            set_nz_flags(reg.ac);
+
+
+            break;
+        /* }}} */
+        /* SBC (8) {{{ */
+        case 0xE9: // SBC IMM
+            ubyte = mem->get_immediate();
+            goto sbc_op_1;
+        case 0xE5: // SBC ZERO
+            ubyte = mem->get_byte(mem->get_zero_page());
+            goto sbc_op_1;
+        case 0xF5: // SBC ZERO X
+            ubyte = mem->get_byte(mem->get_zero_page_x());
+            goto sbc_op_1;
+        case 0xED: // SBC ABS
+            ubyte = mem->get_byte(mem->get_absolute());
+            goto sbc_op_2;
+        case 0xFD: // SBC ABS X
+            ubyte = mem->get_byte(mem->get_absolute_x());
+            goto sbc_op_2;
+        case 0xF9: // SBC ABS Y
+            ubyte = mem->get_byte(mem->get_absolute_y());
+            goto sbc_op_2;
+        case 0xE1: // SBC IND X
+            ubyte = mem->get_byte(mem->get_indirect_x());
+            goto sbc_op_1;
+        case 0xF1: // SBC IND Y
+            ubyte = mem->get_byte(mem->get_indirect_y());
+            goto sbc_op_1;
+
+        sbc_op_2:
+            reg.pc += 1;
+        sbc_op_1:
+            reg.pc += 1;
+
+            uword = reg.ac - ubyte;
+            if (reg.ps[FLAG_CARRY])
+                uword -= 1;
+
             /* TODO */
             break;
         /* }}} */
