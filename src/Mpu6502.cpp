@@ -11,7 +11,7 @@
     LDA, LDX, LDY, STA, STX, STY
     AND, ORA, EOR, TAX, TAY, TSX
     TXA, TXS, TYA, CLC, CLD, CLI,
-    CLV*, SEC, SED, SEI, BIT, NOP
+    CLV, SEC, SED, SEI, BIT, NOP
 
     *: Needs tests
 
@@ -315,6 +315,15 @@ void Mpu6502::step() // {{{
             reg.ps[FLAG_ZERO] = 0 == (byte & reg.ac);
             reg.ps[FLAG_NEGATIVE] = ((int8_t) byte) < 0;
             reg.ps[FLAG_OVERFLOW] = (byte & (1 << 6)) ? 1 : 0;
+            break;
+        /* }}} */
+        /* ADC (2) {{{ */
+        case 0x69: // ADC IMM
+            byte = mem->get_immediate();
+            goto adc_op_1;
+        adc_op_1:
+            reg.pc += 1;
+            /* TODO */
             break;
         /* }}} */
         /* TAX (1) {{{ */
