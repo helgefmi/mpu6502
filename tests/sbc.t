@@ -3,18 +3,24 @@ LDA #$00
 SBC #$01
 assert flags.v 0
 assert flags.c 0
+assert flags.n 1
+assert flags.z 0
 
 test sbc -128 - 1 = -129
 LDA #$80
 SBC #$01
 assert flags.v 1
 assert flags.c 1
+assert flags.n 0
+assert flags.z 0
 
 test sbc 127 - -1 = 128
 LDA #$7F
 SBC #$FF
 assert flags.v 1
 assert flags.c 0
+assert flags.n 1
+assert flags.z 0
 
 
 test sbc zero
