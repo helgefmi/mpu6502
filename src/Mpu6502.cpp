@@ -12,13 +12,13 @@
     AND, ORA, EOR, TAX, TAY, TSX
     TXA, TXS, TYA, CLC, CLD, CLI,
     CLV, SEC, SED, SEI, BIT, NOP,
-    ADC, SBC, 
+    ADC, SBC, CMP, CPX, CPY, 
 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
     PHA, PHP, PLA, PLP, RTI
-    CMP, CPX, CPY, INC, INX
+    INC, INX
     INY, DEC, DEX, DEY, ASL, LSR
     ROL, ROR, JMP, JSR, RTS, BCC
     BCS, BEQ, BMI, BNE, BPL, BVC,
@@ -415,6 +415,77 @@ void Mpu6502::step() // {{{
 
             reg.ac = uword;
             set_nz_flags(reg.ac);
+            break;
+        /* }}} */
+        /* CMP (8) {{{ */
+        case 0xC9: // CMP IMM
+            ubyte = mem->get_immediate();
+            goto cmp_op_1;
+        case 0xC5: // CMP ZERO
+            ubyte = mem->get_byte(mem->get_zero_page());
+            goto cmp_op_1;
+        case 0xD5: // CMP ZERO X
+            ubyte = mem->get_byte(mem->get_zero_page_x());
+            goto cmp_op_1;
+        case 0xCD: // CMP ABS
+            ubyte = mem->get_byte(mem->get_absolute());
+            goto cmp_op_2;
+        case 0xDD: // CMP ABS X
+            ubyte = mem->get_byte(mem->get_absolute_x());
+            goto cmp_op_2;
+        case 0xD9: // CMP ABS Y
+            ubyte = mem->get_byte(mem->get_absolute_y());
+            goto cmp_op_2;
+        case 0xC1: // CMP IND X
+            ubyte = mem->get_byte(mem->get_indirect_x());
+            goto cmp_op_1;
+        case 0xD1: // CMP IND Y
+            ubyte = mem->get_byte(mem->get_indirect_y());
+            goto cmp_op_1;
+
+        cmp_op_2:
+            reg.pc += 1;
+        cmp_op_1:
+            reg.pc += 1;
+
+            reg.ps[FLAG_CARRY] = (reg.ac >= ubyte);
+            set_nz_flags(reg.ac - ubyte);
+            break;
+        /* }}} */
+        /* CPX (3) {{{ */
+        case 0xE0: // CPX IMM
+            ubyte = mem->get_immediate();
+            goto cpx_op_1;
+        case 0xE4: // CPX ZERO
+            ubyte = mem->get_byte(mem->get_zero_page());
+            goto cpx_op_1;
+        case 0xEC: // CPX ABS
+            ubyte = mem->get_byte(mem->get_absolute());
+            reg.pc += 1;
+
+        cpx_op_1:
+            reg.pc += 1;
+
+            reg.ps[FLAG_CARRY] = (reg.x >= ubyte);
+            set_nz_flags(reg.x - ubyte);
+            break;
+        /* }}} */
+        /* CPY (3) {{{ */
+        case 0xC0: // CPY IMM
+            ubyte = mem->get_immediate();
+            goto cpy_op_1;
+        case 0xC4: // CPY ZERO
+            ubyte = mem->get_byte(mem->get_zero_page());
+            goto cpy_op_1;
+        case 0xCC: // CPY ABS
+            ubyte = mem->get_byte(mem->get_absolute());
+            reg.pc += 1;
+
+        cpy_op_1:
+            reg.pc += 1;
+
+            reg.ps[FLAG_CARRY] = (reg.y >= ubyte);
+            set_nz_flags(reg.y - ubyte);
             break;
         /* }}} */
         /* TAX (1) {{{ */
