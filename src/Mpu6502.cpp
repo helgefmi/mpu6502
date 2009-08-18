@@ -417,6 +417,72 @@ void Mpu6502::step() // {{{
             set_nz_flags(reg.ac);
             break;
         /* }}} */
+        /* ASL (8) {{{ */
+        case 0x0A: // ASL ACCUM
+            reg.ps[FLAG_CARRY] = (reg.ac & (1 << 7)) ? 1 : 0;
+            reg.ac <<= 1;
+            set_nz_flags(reg.ac);
+            break;
+
+        case 0x06: // ASL ZERO
+            uword = mem->get_zero_page();
+            goto asl_op_1;
+        case 0x16: // ASL ZERO X
+            uword = mem->get_zero_page_x();
+            goto asl_op_1;
+        case 0x0E: // ASL ABS
+            uword = mem->get_absolute();
+            goto asl_op_2;
+        case 0x1E: // ASL ABS X
+            uword = mem->get_absolute_x();
+            goto asl_op_2;
+
+        asl_op_2:
+            reg.pc += 1;
+        asl_op_1:
+            reg.pc += 1;
+
+            ubyte = mem->get_byte(uword);
+
+            reg.ps[FLAG_CARRY] = (ubyte & (1 << 7)) ? 1 : 0;
+            mem->set_byte(uword, ubyte << 1);
+
+            set_nz_flags(ubyte << 1);
+            break;
+        /* }}} */
+        /* LSR (8) {{{ */
+        case 0x4A: // LSR ACCUM
+            reg.ps[FLAG_CARRY] = (reg.ac & 1);
+            reg.ac >>= 1;
+            set_nz_flags(reg.ac);
+            break;
+
+        case 0x46: // LSR ZERO
+            uword = mem->get_zero_page();
+            goto lsr_op_1;
+        case 0x56: // LSR ZERO X
+            uword = mem->get_zero_page_x();
+            goto lsr_op_1;
+        case 0x4E: // LSR ABS
+            uword = mem->get_absolute();
+            goto lsr_op_2;
+        case 0x5E: // LSR ABS X
+            uword = mem->get_absolute_x();
+            goto lsr_op_2;
+
+        lsr_op_2:
+            reg.pc += 1;
+        lsr_op_1:
+            reg.pc += 1;
+
+            ubyte = mem->get_byte(uword);
+
+            reg.ps[FLAG_CARRY] = (ubyte & 1) ? 1 : 0;
+            mem->set_byte(uword, ubyte >> 1);
+
+            set_nz_flags(ubyte >> 1);
+            break;
+        /* }}} */
         /* CMP (8) {{{ */
         case 0xC9: // CMP IMM
             ubyte = mem->get_immediate();
