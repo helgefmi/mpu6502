@@ -13,13 +13,13 @@
     TXA, TXS, TYA, CLC, CLD, CLI,
     CLV, SEC, SED, SEI, BIT, NOP,
     ADC, SBC, CMP, CPX, CPY, 
+    INC, INX INY, DEC, DEX, DEY,
 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
     PHA, PHP, PLA, PLP, RTI
-    INC, INX
-    INY, DEC, DEX, DEY, ASL, LSR
+    ASL, LSR
     ROL, ROR, JMP, JSR, RTS, BCC
     BCS, BEQ, BMI, BNE, BPL, BVC,
     BVS, BRK
@@ -486,6 +486,76 @@ void Mpu6502::step() // {{{
 
             reg.ps[FLAG_CARRY] = (reg.y >= ubyte);
             set_nz_flags(reg.y - ubyte);
+            break;
+        /* }}} */
+        /* INC (4) {{{ */
+        case 0xE6: // INC ZERO
+            uword = mem->get_zero_page();
+            goto inc_op_1;
+        case 0xF6: // INC ZERO X
+            uword = mem->get_zero_page_x();
+            goto inc_op_1;
+        case 0xEE: // INC ABS
+            uword = mem->get_absolute();
+            goto inc_op_2;
+        case 0xFE: // INC ABS X
+            uword = mem->get_absolute_x();
+            goto inc_op_2;
+
+        inc_op_2:
+            reg.pc += 1;
+        inc_op_1:
+            reg.pc += 1;
+
+            mem->set_byte(uword, mem->get_byte(uword) + 1);
+            set_nz_flags(mem->get_byte(uword));
+            break;
+        /* }}} */
+        /* DEC (4) {{{ */
+        case 0xC6: // DEC ZERO
+            uword = mem->get_zero_page();
+            goto dec_op_1;
+        case 0xd6: // DEC ZERO X
+            uword = mem->get_zero_page_x();
+            goto dec_op_1;
+        case 0xCE: // DEC ABS
+            uword = mem->get_absolute();
+            goto dec_op_2;
+        case 0xDE: // DEC ABS X
+            uword = mem->get_absolute_x();
+            goto dec_op_2;
+
+        dec_op_2:
+            reg.pc += 1;
+        dec_op_1:
+            reg.pc += 1;
+
+            mem->set_byte(uword, mem->get_byte(uword) - 1);
+            set_nz_flags(mem->get_byte(uword));
+            break;
+        /* }}} */
+        /* INX (1) {{{ */
+        case 0xE8: // INX IMPLIED
+            reg.x += 1;
+            set_nz_flags(reg.x);
+            break;
+        /* }}} */
+        /* DEX (1) {{{ */
+        case 0xCA: // DEX IMPLIED
+            reg.x -= 1;
+            set_nz_flags(reg.x);
+            break;
+        /* }}} */
+        /* INY (1) {{{ */
+        case 0xC8: // INY IMPLIED
+            reg.y += 1;
+            set_nz_flags(reg.y);
+            break;
+        /* }}} */
+        /* DEY (1) {{{ */
+        case 0x88: // DEY IMPLIED
+            reg.y -= 1;
+            set_nz_flags(reg.y);
             break;
         /* }}} */
         /* TAX (1) {{{ */
