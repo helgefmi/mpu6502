@@ -11,13 +11,14 @@
     LDA, LDX, LDY, STA, STX, STY
     AND, ORA, EOR, TAX, TAY, TSX
     TXA, TXS, TYA, CLC, CLD, CLI,
-    CLV, SEC, SED, SEI, BIT, NOP
+    CLV, SEC, SED, SEI, BIT, NOP,
+    ADC, SBC, 
 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
-    PHA, PHP, PLA, PLP, ADC, RTI
-    SBC, CMP, CPX, CPY, INC, INX
+    PHA, PHP, PLA, PLP, RTI
+    CMP, CPX, CPY, INC, INX
     INY, DEC, DEX, DEY, ASL, LSR
     ROL, ROR, JMP, JSR, RTS, BCC
     BCS, BEQ, BMI, BNE, BPL, BVC,
@@ -68,7 +69,6 @@ void Mpu6502::step() // {{{
     uint8_t opcode = mem->get_byte(reg.pc);
     reg.pc += 1;
 
-    int8_t byte;
     uint8_t ubyte;
     uint16_t uword;
     switch (opcode)
@@ -356,14 +356,16 @@ void Mpu6502::step() // {{{
 
             if (uword > 0xFF)
                 reg.ps[FLAG_CARRY] = 1;
+            else
+                reg.ps[FLAG_CARRY] = 0;
 
-            if (((int8_t) uword < 0) != ((int8_t) reg.ac < 0))
+            if ((int8_t)reg.ac + (int8_t)ubyte > 0x7f || (int8_t)reg.ac + (int8_t)ubyte < -0x80)
                 reg.ps[FLAG_OVERFLOW] = 1;
+            else
+                reg.ps[FLAG_OVERFLOW] = 0;
 
             reg.ac = uword;
             set_nz_flags(reg.ac);
-
-
             break;
         /* }}} */
         /* SBC (8) {{{ */
@@ -401,7 +403,18 @@ void Mpu6502::step() // {{{
             if (reg.ps[FLAG_CARRY])
                 uword -= 1;
 
-            /* TODO */
+            if (uword < 0x100)
+                reg.ps[FLAG_CARRY] = 1;
+            else
+                reg.ps[FLAG_CARRY] = 0;
+
+            if ((int8_t)reg.ac - (int8_t)ubyte > 0x7f || (int8_t)reg.ac - (int8_t)ubyte < -0x80)
+                reg.ps[FLAG_OVERFLOW] = 1;
+            else
+                reg.ps[FLAG_OVERFLOW] = 0;
+
+            reg.ac = uword;
+            set_nz_flags(reg.ac);
             break;
         /* }}} */
         /* TAX (1) {{{ */
