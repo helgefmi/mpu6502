@@ -1,9 +1,9 @@
-#include "Mpu6502.h"
-#include "TestSuite.h"
-#include "exceptions.h"
 #include <iostream>
 #include <string>
 #include <boost/program_options.hpp>
+#include "Mpu6502.h"
+#include "TestSuite.h"
+#include "exceptions.h"
 
 namespace po = boost::program_options;
 

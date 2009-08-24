@@ -1,11 +1,11 @@
 #ifndef __6502_H
 #define __6502_H
 
+#include <stdint.h>
+#include <string>
+#include <bitset>
 #include "Mpu.h"
 #include "defines.h"
-#include <string>
-#include <stdint.h>
-#include <bitset>
 
 typedef struct registers
 {

@@ -25,7 +25,7 @@ class Memory
         inline uint16_t get_word(const uint16_t) const;
 
         inline void reset();
-        void copy_from_istream(std::istream &ifs);
+        inline void copy_from_istream(std::istream &ifs);
 
         inline int get_size() const;
     private:
@@ -55,6 +55,12 @@ inline void Memory::set_word(const uint16_t offset, const uint16_t value) // {{{
 inline void Memory::reset() // {{{
 {
     memset(memory, 0, size);
+} // }}}
+inline void Memory::copy_from_istream(std::istream &ifs) // {{{
+{
+    int size = ifs.tellg();
+    ifs.seekg(0, std::iostream::beg);
+    ifs.read((char*) memory, size);
 } // }}}
 
 inline int Memory::get_size() const // {{{

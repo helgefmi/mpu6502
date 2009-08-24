@@ -1,16 +1,16 @@
-#include "TestSuite.h"
-#include "Mpu6502.h"
-#include "Memory6502.h"
-#include "defines.h"
-#include "exceptions.h"
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <sstream>
 #include <exception>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include "TestSuite.h"
+#include "Mpu6502.h"
+#include "Memory6502.h"
+#include "defines.h"
+#include "exceptions.h"
 
 namespace fs = boost::filesystem;
 

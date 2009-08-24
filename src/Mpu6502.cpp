@@ -1,10 +1,10 @@
+#include <sstream>
+#include <fstream>
+#include <iostream>
 #include "Mpu6502.h"
 #include "Memory6502.h"
 #include "exceptions.h"
 #include "defines.h"
-#include <sstream>
-#include <fstream>
-#include <iostream>
 
 /*
     *** IMPLEMENTED ***
@@ -12,17 +12,16 @@
     AND, ORA, EOR, TAX, TAY, TSX
     TXA, TXS, TYA, CLC, CLD, CLI,
     CLV, SEC, SED, SEI, BIT, NOP,
+    INC, INX, INY, DEC, DEX, DEY,
     ADC, SBC, CMP, CPX, CPY, 
-    INC, INX INY, DEC, DEX, DEY,
 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
-    PHA, PHP, PLA, PLP, RTI
-    ASL, LSR
-    ROL, ROR, JMP, JSR, RTS, BCC
-    BCS, BEQ, BMI, BNE, BPL, BVC,
-    BVS, BRK
+    PHA, PHP, PLA, PLP, RTI, ASL,
+    LSR, ROL, ROR, JMP, JSR, RTS,
+    BCC, BCS, BEQ, BMI, BNE, BPL,
+    BVC, BVS, BRK
 */
 
 Mpu6502::Mpu6502() // {{{
@@ -69,7 +68,7 @@ void Mpu6502::step() // {{{
     uint8_t opcode = mem->get_byte(reg.pc);
     reg.pc += 1;
 
-    uint8_t ubyte;
+    uint8_t ubyte, tmp;
     uint16_t uword;
     switch (opcode)
     {
@@ -354,15 +353,8 @@ void Mpu6502::step() // {{{
             if (reg.ps[FLAG_CARRY])
                 uword += 1;
 
-            if (uword > 0xFF)
-                reg.ps[FLAG_CARRY] = 1;
-            else
-                reg.ps[FLAG_CARRY] = 0;
-
-            if ((int8_t)reg.ac + (int8_t)ubyte > 0x7f || (int8_t)reg.ac + (int8_t)ubyte < -0x80)
-                reg.ps[FLAG_OVERFLOW] = 1;
-            else
-                reg.ps[FLAG_OVERFLOW] = 0;
+            reg.ps[FLAG_CARRY] = (uword > 0xFF);
+            reg.ps[FLAG_OVERFLOW] = ((int8_t)reg.ac + (int8_t)ubyte > 0x7f || (int8_t)reg.ac + (int8_t)ubyte < -0x80);
 
             reg.ac = uword;
             set_nz_flags(reg.ac);
@@ -403,15 +395,8 @@ void Mpu6502::step() // {{{
             if (reg.ps[FLAG_CARRY])
                 uword -= 1;
 
-            if (uword < 0x100)
-                reg.ps[FLAG_CARRY] = 1;
-            else
-                reg.ps[FLAG_CARRY] = 0;
-
-            if ((int8_t)reg.ac - (int8_t)ubyte > 0x7f || (int8_t)reg.ac - (int8_t)ubyte < -0x80)
-                reg.ps[FLAG_OVERFLOW] = 1;
-            else
-                reg.ps[FLAG_OVERFLOW] = 0;
+            reg.ps[FLAG_CARRY] = (uword < 0x100);
+            reg.ps[FLAG_OVERFLOW] = ((int8_t)reg.ac - (int8_t)ubyte > 0x7f || (int8_t)reg.ac - (int8_t)ubyte < -0x80);
 
             reg.ac = uword;
             set_nz_flags(reg.ac);
@@ -481,6 +466,48 @@ void Mpu6502::step() // {{{
             mem->set_byte(uword, ubyte >> 1);
 
             set_nz_flags(ubyte >> 1);
+            break;
+        /* }}} */
+        /* ROL (8) {{{ */
+        case 0x2A: // ROL ACCUM
+            tmp = reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_CARRY] = (reg.ac & (1 << 7)) ? 1 : 0;
+
+            reg.ac <<= 1;
+            reg.ac += tmp;
+
+            set_nz_flags(reg.ac);
+            break;
+
+        case 0x26: // ROL ZERO
+            uword = mem->get_zero_page();
+            goto rol_op_1;
+        case 0x36: // ROL ZERO X
+            uword = mem->get_zero_page_x();
+            goto rol_op_1;
+        case 0x2E: // ROL ABS
+            uword = mem->get_absolute();
+            goto rol_op_2;
+        case 0x3E: // ROL ABS X
+            uword = mem->get_absolute_x();
+            goto rol_op_2;
+
+        rol_op_2:
+            reg.pc += 1;
+        rol_op_1:
+            reg.pc += 1;
+
+            ubyte = mem->get_byte(uword);
+
+            tmp = reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_CARRY] = (ubyte & (1 << 7)) ? 1 : 0;
+
+            ubyte <<= 1;
+            ubyte += tmp;
+
+            mem->set_byte(uword, ubyte);
+
+            set_nz_flags(ubyte);
             break;
         /* }}} */
         /* CMP (8) {{{ */
