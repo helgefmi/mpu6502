@@ -8,20 +8,20 @@
 
 /*
     *** IMPLEMENTED ***
-    LDA, LDX, LDY, STA, STX, STY
-    AND, ORA, EOR, TAX, TAY, TSX
+    LDA, LDX, LDY, STA, STX, STY,
+    AND, ORA, EOR, TAX, TAY, TSX,
     TXA, TXS, TYA, CLC, CLD, CLI,
     CLV, SEC, SED, SEI, BIT, NOP,
     INC, INX, INY, DEC, DEX, DEY,
-    ADC, SBC, CMP, CPX, CPY, 
-
+    ADC, SBC, CMP, CPX, CPY, ROL,
+    ROR, 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
     PHA, PHP, PLA, PLP, RTI, ASL,
-    LSR, ROL, ROR, JMP, JSR, RTS,
-    BCC, BCS, BEQ, BMI, BNE, BPL,
-    BVC, BVS, BRK
+    LSR, JMP, JSR, RTS, BCC, BCS,
+    BEQ, BMI, BNE, BPL, BVC, BVS,
+    BRK
 */
 
 Mpu6502::Mpu6502() // {{{
@@ -504,6 +504,48 @@ void Mpu6502::step() // {{{
 
             ubyte <<= 1;
             ubyte += tmp;
+
+            mem->set_byte(uword, ubyte);
+
+            set_nz_flags(ubyte);
+            break;
+        /* }}} */
+        /* ROR (8) {{{ */
+        case 0x6A: // ROR ACCUM
+            tmp = reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_CARRY] = reg.ac & 1;
+
+            reg.ac >>= 1;
+            reg.ac |= (tmp << 7);
+
+            set_nz_flags(reg.ac);
+            break;
+
+        case 0x66: // ROR ZERO
+            uword = mem->get_zero_page();
+            goto ror_op_1;
+        case 0x76: // ROR ZERO X
+            uword = mem->get_zero_page_x();
+            goto ror_op_1;
+        case 0x6E: // ROR ABS
+            uword = mem->get_absolute();
+            goto ror_op_2;
+        case 0x7E: // ROR ABS X
+            uword = mem->get_absolute_x();
+            goto ror_op_2;
+
+        ror_op_2:
+            reg.pc += 1;
+        ror_op_1:
+            reg.pc += 1;
+
+            ubyte = mem->get_byte(uword);
+
+            tmp = reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_CARRY] = ubyte & 1;
+
+            ubyte >>= 1;
+            ubyte |= (tmp << 7);
 
             mem->set_byte(uword, ubyte);
 
