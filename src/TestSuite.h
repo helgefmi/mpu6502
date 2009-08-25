@@ -23,7 +23,7 @@ class TestSuite
 
         int successive_tests;
         int failed_tests;
-        Mpu6502 *mpu;
+        Mpu6502 *mpu_ptr;
 };
 
 #endif

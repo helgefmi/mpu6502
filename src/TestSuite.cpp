@@ -16,11 +16,11 @@ namespace fs = boost::filesystem;
 
 TestSuite::TestSuite() // {{{
 {
-    mpu = new Mpu6502();
+    mpu_ptr = new Mpu6502();
 } // }}}
 TestSuite::~TestSuite() // {{{
 {
-    delete mpu;
+    delete mpu_ptr;
 } // }}}
 
 void TestSuite::run(const std::string &path) // {{{
@@ -128,8 +128,8 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     }
 
     /* Load the contents into the MPU */
-    mpu->reset();
-    mpu->load_binary_file("a.o65");
+    mpu_ptr->reset();
+    mpu_ptr->load_binary_file("a.o65");
 
     unlink("asm.tmp");
     unlink("a.o65");
@@ -142,7 +142,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
         unsigned int steps = std::count(code.begin(), code.end(), '\n');
         while (steps--)
         {
-            mpu->step();
+            mpu_ptr->step();
         }
     }
     catch (InvalidOpcodeException &e)
@@ -187,7 +187,7 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
         /* Might be prefixed by 0x to indicate hex. strtol() takes care of this! */
         uint16_t int_val = strtol(str_source.substr(4).c_str(), 0, 0);
 
-        source = mpu->mem->get_byte(int_val);
+        source = mpu_ptr->mem_ptr->get_byte(int_val);
     }
 
     else if (str_source.find("reg.") == 0)
@@ -197,19 +197,26 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
         switch (char_val)
         {
             case 'p':
-                source = mpu->reg.pc;
+                if (str_source.size() > 5 && str_source.at(5) == 's')
+                {
+                    source = (uint8_t) mpu_ptr->reg.ps.to_ulong();
+                }
+                else
+                {
+                    source = mpu_ptr->reg.pc;
+                }
                 break;
             case 's':
-                source = mpu->reg.sp;
+                source = mpu_ptr->reg.sp;
                 break;
             case 'a':
-                source = mpu->reg.ac;
+                source = mpu_ptr->reg.ac;
                 break;
             case 'x':
-                source = mpu->reg.x;
+                source = mpu_ptr->reg.x;
                 break;
             case 'y':
-                source = mpu->reg.y;
+                source = mpu_ptr->reg.y;
                 break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
@@ -223,22 +230,22 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
         switch (char_val)
         {
             case 'z':
-                source = mpu->reg.ps[FLAG_ZERO];
+                source = mpu_ptr->reg.ps[FLAG_ZERO];
                 break;
             case 'n':
-                source = mpu->reg.ps[FLAG_NEGATIVE];
+                source = mpu_ptr->reg.ps[FLAG_NEGATIVE];
                 break;
             case 'c':
-                source = mpu->reg.ps[FLAG_CARRY];
+                source = mpu_ptr->reg.ps[FLAG_CARRY];
                 break;
             case 'd':
-                source = mpu->reg.ps[FLAG_DECIMAL];
+                source = mpu_ptr->reg.ps[FLAG_DECIMAL];
                 break;
             case 'i':
-                source = mpu->reg.ps[FLAG_INTERRUPT];
+                source = mpu_ptr->reg.ps[FLAG_INTERRUPT];
                 break;
             case 'v':
-                source = mpu->reg.ps[FLAG_OVERFLOW];
+                source = mpu_ptr->reg.ps[FLAG_OVERFLOW];
                 break;
             default:
                 std::cerr << "Invalid source for assertion: " << str_source << std::endl;
@@ -258,7 +265,7 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
     {
         std::cerr << "Failed assertion: '" << assertType << ' ' << str_source << ' ' << str_value << "'. "
                   << source << " != " << value << std::endl;
-        std::cerr << mpu->to_string() << std::endl;
+        std::cerr << mpu_ptr->to_string() << std::endl;
         return false;
     }
     

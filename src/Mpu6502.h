@@ -41,16 +41,31 @@ class Mpu6502 : public Mpu
     private:
         registers_t reg;
 
-        Memory6502 *mem;
+        Memory6502 *mem_ptr;
 
         inline void set_nz_flags(const uint8_t);
+        inline void push_to_stack(const uint8_t);
+        inline uint8_t pull_from_stack();
 };
 
 /* Inlines */
+#include "Memory6502.h"
 inline void Mpu6502::set_nz_flags(const uint8_t value) // {{{
 {
     reg.ps[FLAG_ZERO] = (0 == value);
     reg.ps[FLAG_NEGATIVE] = ((int8_t) value) < 0;
+} // }}}
+inline void Mpu6502::push_to_stack(const uint8_t value) // {{{
+{
+    mem_ptr->set_byte(0x100 + reg.sp, value);
+    --reg.sp;
+} // }}}
+inline uint8_t Mpu6502::pull_from_stack() // {{{
+{
+    ++reg.sp;
+    uint8_t ret = mem_ptr->get_byte(0x100 + reg.sp);
+
+    return ret;
 } // }}}
 
 #endif

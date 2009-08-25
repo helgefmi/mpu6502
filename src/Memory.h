@@ -10,13 +10,13 @@ class Memory
     public:
         Memory(unsigned int size) : size(size)
         {
-            memory = new uint8_t[size];
+            memory_ptr = new uint8_t[size];
             reset();
         }
 
         ~Memory()
         {
-            delete [] memory;
+            delete [] memory_ptr;
         }
 
         inline void set_byte(const uint16_t, const uint8_t);
@@ -29,14 +29,14 @@ class Memory
 
         inline int get_size() const;
     private:
-        uint8_t *memory;
+        uint8_t *memory_ptr;
         int size;
 };
 
 /* inlines */
 inline uint8_t Memory::get_byte(const uint16_t offset) const // {{{
 {
-    return memory[offset];
+    return memory_ptr[offset];
 } // }}}
 inline uint16_t Memory::get_word(const uint16_t offset) const // {{{
 {
@@ -44,23 +44,23 @@ inline uint16_t Memory::get_word(const uint16_t offset) const // {{{
 } // }}}
 inline void Memory::set_byte(const uint16_t offset, const uint8_t value) // {{{
 {
-    memory[offset] = value;
+    memory_ptr[offset] = value;
 } // }}}
 inline void Memory::set_word(const uint16_t offset, const uint16_t value) // {{{
 {
-    memory[offset] = value & 0xFF;
-    memory[offset+1] = value >> 8;
+    memory_ptr[offset] = value & 0xFF;
+    memory_ptr[offset+1] = value >> 8;
 } // }}}
 
 inline void Memory::reset() // {{{
 {
-    memset(memory, 0, size);
+    memset(memory_ptr, 0, size);
 } // }}}
 inline void Memory::copy_from_istream(std::istream &ifs) // {{{
 {
     int size = ifs.tellg();
     ifs.seekg(0, std::iostream::beg);
-    ifs.read((char*) memory, size);
+    ifs.read((char*) memory_ptr, size);
 } // }}}
 
 inline int Memory::get_size() const // {{{
