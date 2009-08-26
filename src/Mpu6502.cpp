@@ -59,8 +59,12 @@ void Mpu6502::reset() // {{{
 
     mem_ptr->reset();
 } // }}}
-void Mpu6502::loop() // {{{
+void Mpu6502::run() // {{{
 {
+    while (true)
+    {
+        step();
+    }
 } // }}}
 void Mpu6502::step() // {{{
 {

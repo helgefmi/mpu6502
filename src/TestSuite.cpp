@@ -137,10 +137,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     /* Step through the code */
     try
     {
-        while (true)
-        {
-            mpu_ptr->step();
-        }
+        mpu_ptr->run();
     }
     catch (InvalidOpcodeException &e)
     {
