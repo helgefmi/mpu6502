@@ -1,5 +1,6 @@
 test txa_1
     LDX #$AB
     TXS
-assert reg.p 3
+    .byte $2
+assert reg.p 4
 assert reg.s 0xAB

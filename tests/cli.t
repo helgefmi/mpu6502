@@ -1,5 +1,6 @@
 test cli_1
     SEI
     CLI
-assert reg.p 2
+    .byte 2
+assert reg.p 3
 assert flags.i 0

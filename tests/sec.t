@@ -1,4 +1,5 @@
 test sec_1
     SEC
-assert reg.p 1
+    .byte $2
+assert reg.p 2
 assert flags.c 1

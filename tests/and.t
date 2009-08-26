@@ -1,7 +1,8 @@
 test and_imm
     LDA #$F0
     AND #$AB
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert reg.a 0xA0
 
 test and_zero
@@ -9,7 +10,8 @@ test and_zero
     STA $CD
     LDA #$F0
     AND $CD
-assert reg.p 8
+    .byte 2
+assert reg.p 9
 assert reg.a 0xA0
 
 test and_zero_x
@@ -18,7 +20,8 @@ test and_zero_x
     STA $5A
     LDA #$AB
     AND $50,X
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert reg.a 0xA0
 
 test and_abs
@@ -26,7 +29,8 @@ test and_abs
     STA $ABCD
     LDA #$AB
     AND $ABCD
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert reg.a 0xA0
 
 test and_abs_x
@@ -35,7 +39,8 @@ test and_abs_x
     STA $ABCD
     LDA #$AB
     AND $AB00,X
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert reg.a 0xA0
 
 test and_abs_y
@@ -44,7 +49,8 @@ test and_abs_y
     STA $ABDC
     LDA #$AB
     AND $AB00,Y
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert reg.a 0xA0
 
 test and_ind_x
@@ -55,7 +61,8 @@ test and_ind_x
     STA $AB
     LDA #$AB
     AND ($50,X)
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert reg.a 0xA0
 
 test and_ind_x_abs
@@ -68,7 +75,8 @@ test and_ind_x_abs
     STA $ABCD
     LDA #$AB
     AND ($50,X)
-assert reg.p 19
+    .byte 2
+assert reg.p 20
 assert reg.a 0xA0
 
 test and_ind_y
@@ -79,7 +87,8 @@ test and_ind_y
     STA $AE
     LDA #$AB
     AND ($50),Y
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert reg.a 0xA0
 
 test and_ind_y_abs
@@ -92,5 +101,6 @@ test and_ind_y_abs
     STA $ABCF
     LDA #$AB
     AND ($50),Y
-assert reg.p 19
+    .byte 2
+assert reg.p 20
 assert reg.a 0xA0

@@ -1,34 +1,39 @@
 test sta_zero
     LDA #$AB
     STA $CD
-assert reg.p 4
+    .byte $2
+assert reg.p 5
 assert mem.0xCD 0xAB
 
 test sta_zero_x
     LDX #$A
     LDA #$EF
     STA $50,X
-assert reg.p 6
+    .byte $2
+assert reg.p 7
 assert mem.0x5A 0xEF
 
 test sta_abs
     LDA #$EF
     STA $ABCD
-assert reg.p 5
+    .byte $2
+assert reg.p 6
 assert mem.0xABCD 0xEF
 
 test sta_abs_x
     LDX #$D
     LDA #$EF
     STA $ABC0,X
-assert reg.p 7
+    .byte $2
+assert reg.p 8
 assert mem.0xABCD 0xEF
 
 test sta_abs_y
     LDY #$D
     LDA #$EF
     STA $ABC0,Y
-assert reg.p 7
+    .byte $2
+assert reg.p 8
 assert mem.0xABCD 0xEF
 
 test sta_ind_x
@@ -37,7 +42,8 @@ test sta_ind_x
     STA $53
     LDA #$CD
     STA ($50,X)
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert mem.0xAB 0xCD
 
 test sta_ind_x_abs
@@ -48,7 +54,8 @@ test sta_ind_x_abs
     STA $54
     LDA #$EF
     STA ($50,X)
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert mem.0xABCD 0xEF
 
 test sta_ind_y
@@ -57,7 +64,8 @@ test sta_ind_y
     STA $50
     LDA #$CD
     STA ($50),Y
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert mem.0xAE 0xCD
 
 test sta_ind_y_abs
@@ -68,5 +76,6 @@ test sta_ind_y_abs
     STA $51
     LDA #$EF
     STA ($50),Y
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert mem.0xABCF 0xEF

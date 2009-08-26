@@ -1,4 +1,5 @@
 test sei_1
     SEI
-assert reg.p 1
+    .byte $2
+assert reg.p 2
 assert flags.i 1

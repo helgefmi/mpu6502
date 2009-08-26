@@ -4,7 +4,8 @@ test nop_1:
     NOP
     NOP
     NOP
-assert reg.p 5
+    .byte $2
+assert reg.p 6
 assert reg.a 0
 assert reg.x 0
 assert reg.y 0

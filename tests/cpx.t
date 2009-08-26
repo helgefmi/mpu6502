@@ -1,7 +1,8 @@
 test cpx imm n
     LDX #$50
     CPX #$60
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 0
 assert flags.z 0
 assert flags.n 1
@@ -9,7 +10,8 @@ assert flags.n 1
 test cpx imm z
     LDX #$50
     CPX #$50
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 1
 assert flags.z 1
 assert flags.n 0
@@ -17,7 +19,8 @@ assert flags.n 0
 test cpx imm c
     LDX #$60
     CPX #$50
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 1
 assert flags.z 0
 assert flags.n 0
@@ -27,7 +30,8 @@ test cpx zero
     STA $50
     LDX #$F
     CPX $50
-assert reg.p 8
+    .byte 2
+assert reg.p 9
 assert flags.z 1
 
 test cpx abs
@@ -35,5 +39,6 @@ test cpx abs
     STA $5000
     LDX #$7F
     CPX $5000
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert flags.z 1

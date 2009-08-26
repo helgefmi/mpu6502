@@ -1,7 +1,8 @@
 test pha once
     LDA #$AB
     PHA
-assert reg.p 3
+    .byte $2
+assert reg.p 4
 assert mem.0x1FF 0xAB
 assert mem.0x1FE 0x0
 assert reg.sp 0xFE
@@ -11,7 +12,8 @@ test pha thrice
     PHA
     PHA
     PHA
-assert reg.p 5
+    .byte $2
+assert reg.p 6
 assert mem.0x1FF 0xCD
 assert mem.0x1FE 0xCD
 assert mem.0x1FD 0xCD
@@ -25,7 +27,8 @@ test pha ldx/ldy
     PHA
     LDX $1FE
     LDY $1FF
-assert reg.p 12
+    .byte $2
+assert reg.p 13
 assert mem.0x1FF 0xAB
 assert mem.0x1FE 0xCD
 assert reg.x 0xCD

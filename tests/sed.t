@@ -1,4 +1,5 @@
 test sed_1
     SED
-assert reg.p 1
+    .byte $2
+assert reg.p 2
 assert flags.d 1

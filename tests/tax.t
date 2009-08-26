@@ -1,5 +1,6 @@
 test tax_1
     LDA #$AB
     TAX
-assert reg.p 3
+    .byte $2
+assert reg.p 4
 assert reg.x 0xAB

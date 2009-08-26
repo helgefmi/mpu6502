@@ -1,22 +1,28 @@
 test sbc 0 - 1 = -1
-LDA #$00
-SBC #$01
+    LDA #$00
+    SBC #$01
+    .byte $2
+assert reg.p 5
 assert flags.v 0
 assert flags.c 0
 assert flags.n 1
 assert flags.z 0
 
 test sbc -128 - 1 = -129
-LDA #$80
-SBC #$01
+    LDA #$80
+    SBC #$01
+    .byte $2
+assert reg.p 5
 assert flags.v 1
 assert flags.c 1
 assert flags.n 0
 assert flags.z 0
 
 test sbc 127 - -1 = 128
-LDA #$7F
-SBC #$FF
+    LDA #$7F
+    SBC #$FF
+    .byte $2
+assert reg.p 5
 assert flags.v 1
 assert flags.c 0
 assert flags.n 1
@@ -28,7 +34,8 @@ test sbc zero
     STA $50
     LDA #$11
     SBC $50
-assert reg.p 8
+    .byte $2
+assert reg.p 9
 assert reg.ac 0x10
 
 test sbc zero x
@@ -37,7 +44,8 @@ test sbc zero x
     STA $50
     LDA #$01
     SBC $40,X
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.ac 0x80
 
 test sbc abs
@@ -45,7 +53,8 @@ test sbc abs
     STA $5000
     LDA #$01
     SBC $5000
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.ac 0x80
 
 test sbc abs x
@@ -54,7 +63,8 @@ test sbc abs x
     STA $5000
     LDA #$01
     SBC $4FF0,X
-assert reg.p 12
+    .byte $2
+assert reg.p 13
 assert reg.ac 0x80
 
 test sbc abs y
@@ -63,7 +73,8 @@ test sbc abs y
     STA $5000
     LDA #$01
     SBC $4FF0,Y
-assert reg.p 12
+    .byte $2
+assert reg.p 13
 assert reg.ac 0x80
 
 test sbc ind x
@@ -74,7 +85,8 @@ test sbc ind x
     STA $AB
     LDA #$01
     SBC ($40,X)
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert reg.ac 0x80
 
 test sbc ind y
@@ -85,5 +97,6 @@ test sbc ind y
     STA $AB
     LDA #$01
     SBC ($50),Y
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert reg.ac 0x80

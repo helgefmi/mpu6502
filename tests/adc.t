@@ -1,7 +1,8 @@
 test adc imm 1 + 1 flags
     LDA #$01
     ADC #$01
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.v 0
 assert flags.c 0
 assert flags.n 0
@@ -10,7 +11,8 @@ assert flags.z 0
 test adc imm 1 + -1 flags
     LDA #$01 
     ADC #$FF
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.v 0
 assert flags.c 1
 assert flags.n 0
@@ -19,7 +21,8 @@ assert flags.z 1
 test adc imm 127 + 1 flags
     LDA #$7F
     ADC #$01
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.v 1
 assert flags.c 0
 assert flags.n 1
@@ -28,7 +31,8 @@ assert flags.z 0
 test adc imm -127 + -1 flags
     LDA #$80
     ADC #$FF
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 1
 assert flags.v 1
 assert flags.n 0
@@ -40,7 +44,8 @@ test adc zero
     STA $50
     LDA #$F
     ADC $50
-assert reg.p 8
+    .byte 2
+assert reg.p 9
 assert reg.ac 0x10
 
 test adc zero x
@@ -49,7 +54,8 @@ test adc zero x
     STA $50
     LDA #$01
     ADC $40,X
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert reg.ac 0x80
 
 test adc abs
@@ -57,7 +63,8 @@ test adc abs
     STA $5000
     LDA #$01
     ADC $5000
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert reg.ac 0x80
 
 test adc abs x
@@ -66,7 +73,8 @@ test adc abs x
     STA $5000
     LDA #$01
     ADC $4FF0,X
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert reg.ac 0x80
 
 test adc abs y
@@ -75,7 +83,8 @@ test adc abs y
     STA $5000
     LDA #$01
     ADC $4FF0,Y
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert reg.ac 0x80
 
 test adc ind x
@@ -86,7 +95,8 @@ test adc ind x
     STA $AB
     LDA #$01
     ADC ($40,X)
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert reg.ac 0x80
 
 test adc ind y
@@ -97,5 +107,6 @@ test adc ind y
     STA $AB
     LDA #$01
     ADC ($50),Y
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert reg.ac 0x80

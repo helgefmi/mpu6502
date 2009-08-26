@@ -1,6 +1,7 @@
 test lda_imm
     LDA #$AB
-assert reg.p 2
+    .byte $2
+assert reg.p 3
 assert reg.a 0xAB
 
 test lda_zero
@@ -8,7 +9,8 @@ test lda_zero
     STA $CD
     LDA #0
     LDA $CD
-assert reg.p 8
+    .byte $2
+assert reg.p 9
 assert reg.a 0xAB
 
 test lda_zero_x
@@ -16,7 +18,8 @@ test lda_zero_x
     LDA #$BC
     STA $5A
     LDA $50,X
-assert reg.p 8
+    .byte $2
+assert reg.p 9
 assert reg.a 0xBC
 
 test lda_abs
@@ -24,7 +27,8 @@ test lda_abs
     STA $ABCD
     LDA #0
     LDA $ABCD
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.a 0xEF
 
 test lda_abs_x
@@ -32,7 +36,8 @@ test lda_abs_x
     LDA #$EF
     STA $ABCD
     LDA $AB00,X
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.a 0xEF
 
 test lda_abs_y
@@ -40,7 +45,8 @@ test lda_abs_y
     STA $ABDC
     LDY #$DC
     LDA $AB00,Y
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.a 0xAB
 
 test lda_ind_x
@@ -51,7 +57,8 @@ test lda_ind_x
     STA $AB
     LDA #0
     LDA ($50,X)
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert reg.a 0xCD
 
 test lda_ind_x_abs
@@ -64,7 +71,8 @@ test lda_ind_x_abs
     STA $ABCD
     LDA #0
     LDA ($50,X)
-assert reg.p 19
+    .byte $2
+assert reg.p 20
 assert reg.a 0xEF
 
 test lda_ind_y
@@ -75,7 +83,8 @@ test lda_ind_y
     STA $AE
     LDA #0
     LDA ($50),Y
-assert reg.p 14
+    .byte $2
+assert reg.p 15
 assert reg.a 0xCD
 
 test lda_ind_y_abs
@@ -88,5 +97,6 @@ test lda_ind_y_abs
     STA $ABCF
     LDA #0
     LDA ($50),Y
-assert reg.p 19
+    .byte $2
+assert reg.p 20
 assert reg.a 0xEF

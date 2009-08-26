@@ -17,6 +17,11 @@ class InvalidOpcodeException : public std::exception
             return ss.str();
         }
 
+        inline int get_opcode()
+        {
+            return opcode;
+        }
+
     private:
         const int opcode;
 };

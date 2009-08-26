@@ -1,7 +1,8 @@
 test dey zero
     LDY #$AC
     DEY
-assert reg.p 3
+    .byte 2
+assert reg.p 4
 assert flags.n 1
 assert flags.z 0
 assert reg.y 0xAB
@@ -9,7 +10,8 @@ assert reg.y 0xAB
 test dey zero
     LDY #$00
     DEY
-assert reg.p 3
+    .byte 2
+assert reg.p 4
 assert flags.n 1
 assert flags.z 0
 assert reg.y 0xFF

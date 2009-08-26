@@ -1,6 +1,7 @@
 test ldy_imm
     LDY #$AB
-assert reg.p 2
+    .byte $2
+assert reg.p 3
 assert reg.y 0xAB
 
 test ldy_zero
@@ -8,7 +9,8 @@ test ldy_zero
     STA $CD
     LDA #0
     LDY $CD
-assert reg.p 8
+    .byte $2
+assert reg.p 9
 assert reg.y 0xAB
 
 test ldy_zero_x
@@ -16,7 +18,8 @@ test ldy_zero_x
     LDA #$BC
     STA $5A
     LDY $50,X
-assert reg.p 8
+    .byte $2
+assert reg.p 9
 assert reg.y 0xBC
 
 test ldy_abs
@@ -24,7 +27,8 @@ test ldy_abs
     STA $ABCD
     LDA #0
     LDY $ABCD
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.y 0xAB
 
 test ldy_abs_y
@@ -32,5 +36,6 @@ test ldy_abs_y
     STA $ABDC
     LDX #$DC
     LDY $AB00,X
-assert reg.p 10
+    .byte $2
+assert reg.p 11
 assert reg.y 0xAB

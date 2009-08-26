@@ -1,5 +1,6 @@
 test cld_1
     SED
     CLD
-assert reg.p 2
+    .byte 2
+assert reg.p 3
 assert flags.d 0

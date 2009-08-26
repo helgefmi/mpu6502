@@ -1,7 +1,8 @@
 test cmp imm n
     LDA #$50
     CMP #$60
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 0
 assert flags.z 0
 assert flags.n 1
@@ -9,7 +10,8 @@ assert flags.n 1
 test cmp imm z
     LDA #$50
     CMP #$50
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 1
 assert flags.z 1
 assert flags.n 0
@@ -17,7 +19,8 @@ assert flags.n 0
 test cmp imm c
     LDA #$60
     CMP #$50
-assert reg.p 4
+    .byte 2
+assert reg.p 5
 assert flags.c 1
 assert flags.z 0
 assert flags.n 0
@@ -28,7 +31,8 @@ test cmp zero
     STA $50
     LDA #$F
     CMP $50
-assert reg.p 8
+    .byte 2
+assert reg.p 9
 assert flags.z 1
 
 test cmp zero x
@@ -37,7 +41,8 @@ test cmp zero x
     STA $50
     LDA #$7F
     CMP $40,X
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert flags.z 1
 
 test cmp abs
@@ -45,7 +50,8 @@ test cmp abs
     STA $5000
     LDA #$7F
     CMP $5000
-assert reg.p 10
+    .byte 2
+assert reg.p 11
 assert flags.z 1
 
 test cmp abs x
@@ -54,7 +60,8 @@ test cmp abs x
     STA $5000
     LDA #$7F
     CMP $4FF0,X
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert flags.z 1
 
 test cmp abs y
@@ -63,7 +70,8 @@ test cmp abs y
     STA $5000
     LDA #$7F
     CMP $4FF0,Y
-assert reg.p 12
+    .byte 2
+assert reg.p 13
 assert flags.z 1
 
 test cmp ind x
@@ -74,7 +82,8 @@ test cmp ind x
     STA $AB
     LDA #$7F
     CMP ($40,X)
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert flags.z 1
 
 test cmp ind y
@@ -85,5 +94,6 @@ test cmp ind y
     STA $AB
     LDA #$7F
     CMP ($50),Y
-assert reg.p 14
+    .byte 2
+assert reg.p 15
 assert flags.z 1

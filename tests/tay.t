@@ -1,5 +1,6 @@
 test tay_1
     LDA #$AB
     TAY
-assert reg.p 3
+    .byte $2
+assert reg.p 4
 assert reg.y 0xAB

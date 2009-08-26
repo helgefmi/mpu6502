@@ -1,7 +1,8 @@
 test plp null
     PHP
     PLP
-assert reg.pc 2
+    .byte $2
+assert reg.pc 3
 assert reg.ps 0
 
 test plp c flag
@@ -9,7 +10,8 @@ test plp c flag
     PHP
     CLC
     PLP
-assert reg.pc 4
+    .byte $2
+assert reg.pc 5
 assert reg.ps 1
 
 test plp d flag
@@ -17,7 +19,8 @@ test plp d flag
     PHP
     SEI
     PLP
-assert reg.pc 4
+    .byte $2
+assert reg.pc 5
 assert reg.ps 0x8
 
 test plp i flag
@@ -25,7 +28,8 @@ test plp i flag
     PHP
     CLI
     PLP
-assert reg.pc 4
+    .byte $2
+assert reg.pc 5
 assert reg.ps 0x4
 
 test plp cdi flag
@@ -37,5 +41,6 @@ test plp cdi flag
     CLD
     CLI
     PLP
-assert reg.pc 8
+    .byte $2
+assert reg.pc 9
 assert reg.ps 0xD

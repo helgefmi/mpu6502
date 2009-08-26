@@ -137,18 +137,18 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     /* Step through the code */
     try
     {
-        /* I think the number of steps will always be the number of code lines .. */
-        /* TODO: Fix this? Might want to use more complex assembly sometime.. */
-        unsigned int steps = std::count(code.begin(), code.end(), '\n');
-        while (steps--)
+        while (true)
         {
             mpu_ptr->step();
         }
     }
     catch (InvalidOpcodeException &e)
     {
-        std::cerr << e.what() << std::endl;
-        return false;
+        if (e.get_opcode() != 2)
+        {
+            std::cerr << e.what() << std::endl;
+            return false;
+        }
     }
     catch (std::exception &e)
     {

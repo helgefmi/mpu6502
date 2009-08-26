@@ -3,5 +3,6 @@ test clv_v_set_by_bit
     STA $CD
     BIT $CD
     CLV
-assert reg.p 7
+    .byte 2
+assert reg.p 8
 assert flags.v 0
