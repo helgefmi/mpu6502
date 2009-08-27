@@ -15,13 +15,12 @@
     INC, INX, INY, DEC, DEX, DEY,
     ADC, SBC, CMP, CPX, CPY, ROL,
     ROR, ASL, LSR, PHA, PHP, PLA,
-    PLP, 
+    PLP, JMP, JSR, RTS, 
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
-    BRK, RTI, JMP, JSR, RTS, BCC,
-    BCS, BEQ, BMI, BNE, BPL, BVC,
-    BVS,
+    BCC, BCS, BEQ, BMI, BNE, BPL,
+    BVC, BVS, BRK, RTI,
 */
 
 Mpu6502::Mpu6502() // {{{
@@ -76,6 +75,7 @@ void Mpu6502::step() // {{{
     reg.pc += 1;
 
     uint8_t ubyte, tmp;
+    int8_t byte;
     uint16_t uword;
     switch (opcode)
     {
@@ -597,15 +597,15 @@ void Mpu6502::step() // {{{
         /* CPX (3) {{{ */
         case 0xE0: // CPX IMM
             ubyte = mem_ptr->get_immediate();
-            goto cpx_op_1;
+            goto cpx_op;
         case 0xE4: // CPX ZERO
             ubyte = mem_ptr->get_byte(mem_ptr->get_zero_page());
-            goto cpx_op_1;
+            goto cpx_op;
         case 0xEC: // CPX ABS
             ubyte = mem_ptr->get_byte(mem_ptr->get_absolute());
             reg.pc += 1;
 
-        cpx_op_1:
+        cpx_op:
             reg.pc += 1;
 
             reg.ps[FLAG_CARRY] = (reg.x >= ubyte);
@@ -615,15 +615,15 @@ void Mpu6502::step() // {{{
         /* CPY (3) {{{ */
         case 0xC0: // CPY IMM
             ubyte = mem_ptr->get_immediate();
-            goto cpy_op_1;
+            goto cpy_op;
         case 0xC4: // CPY ZERO
             ubyte = mem_ptr->get_byte(mem_ptr->get_zero_page());
-            goto cpy_op_1;
+            goto cpy_op;
         case 0xCC: // CPY ABS
             ubyte = mem_ptr->get_byte(mem_ptr->get_absolute());
             reg.pc += 1;
 
-        cpy_op_1:
+        cpy_op:
             reg.pc += 1;
 
             reg.ps[FLAG_CARRY] = (reg.y >= ubyte);
@@ -796,11 +796,10 @@ void Mpu6502::step() // {{{
         case 0xEA:
             break;
         /* }}} */
-        /* JMP (4) {{{ */
+        /* JMP (2) {{{ */
         case 0x4C: // JMP ABS
             uword = mem_ptr->get_absolute();
             goto jmp_op;
-
         case 0x6C:
             uword = mem_ptr->get_word(mem_ptr->get_absolute());
 
@@ -808,16 +807,43 @@ void Mpu6502::step() // {{{
             reg.pc = uword;
             break;
         /* }}} */
-        /* JSR (4) {{{ */
+        /* JSR (1) {{{ */
         case 0x20: // JSR ABS
             uword = mem_ptr->get_absolute();
             push_to_stack(reg.pc + 1);
             reg.pc = uword;
             break;
         /* }}} */
-        /* RTS (4) {{{ */
+        /* RTS (1) {{{ */
         case 0x60: // RTS ABS
             reg.pc = pull_from_stack() + 1;
+            break;
+        /* }}} */
+        /* Branches (8) {{{ */
+        case 0x90: // BCC
+        case 0xB0: // BCS
+            tmp = reg.ps[FLAG_CARRY];
+            goto do_branch;
+        case 0xD0: // BNE
+        case 0xF0: // BEQ
+            tmp = reg.ps[FLAG_ZERO];
+            goto do_branch;
+        case 0x10: // BPL
+        case 0x30: // BMI
+            tmp = reg.ps[FLAG_NEGATIVE];
+            goto do_branch;
+        case 0x50: // BVC
+        case 0x70: // BVS
+            tmp = reg.ps[FLAG_OVERFLOW];
+
+        do_branch:
+            byte = mem_ptr->get_immediate();
+            reg.pc += 1;
+
+            /* tmp = is flag set?
+               the opcode expression = do I want the flag to be set? */
+            if (tmp != (opcode == 0x90 || opcode == 0xD0 || opcode == 0x10 || opcode == 0x50))
+                reg.pc += byte;
             break;
         /* }}} */
         default:
