@@ -234,6 +234,9 @@ bool TestSuite::check_assertion(const std::string &assertType, const std::string
         char char_val = str_source.at(6);
         switch (char_val)
         {
+            case 'b':
+                source = mpu_ptr->reg.ps[FLAG_BREAK];
+                break;
             case 'z':
                 source = mpu_ptr->reg.ps[FLAG_ZERO];
                 break;

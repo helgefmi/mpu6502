@@ -7,7 +7,7 @@
 #include "defines.h"
 
 /*
-    *** IMPLEMENTED ***
+    *** OPCODES ***
     LDA, LDX, LDY, STA, STX, STY,
     AND, ORA, EOR, TAX, TAY, TSX,
     TXA, TXS, TYA, CLC, CLD, CLI,
@@ -17,11 +17,8 @@
     ROR, ASL, LSR, PHA, PHP, PLA,
     PLP, JMP, JSR, RTS, BCC, BCS,
     BEQ, BMI, BNE, BPL, BVC, BVS,
-    *: Needs tests
-
-    *** NOT IMPLEMENTED ***
-    
     BRK, RTI,
+    
 */
 
 Mpu6502::Mpu6502() // {{{
@@ -845,6 +842,21 @@ void Mpu6502::step() // {{{
                the opcode expression = do I want the flag to be set? */
             if (tmp != (opcode == 0x90 || opcode == 0xD0 || opcode == 0x10 || opcode == 0x50))
                 reg.pc += byte;
+            break;
+        /* }}} */
+        /* BRK (1) {{{ */
+        case 0x00: // BRK
+            push_to_stack(reg.pc);
+            push_to_stack(reg.ps.to_ulong());
+
+            reg.pc = mem_ptr->get_word(0xFFFE);;
+            reg.ps[FLAG_BREAK] = 1;
+            break;
+        /* }}} */
+        /* RTI (1) {{{ */
+        case 0x40: // RTI
+            reg.ps = pull_from_stack();
+            reg.pc = pull_from_stack();
             break;
         /* }}} */
         default:
