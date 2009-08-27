@@ -15,12 +15,13 @@
     INC, INX, INY, DEC, DEX, DEY,
     ADC, SBC, CMP, CPX, CPY, ROL,
     ROR, ASL, LSR, PHA, PHP, PLA,
-    PLP, JMP, JSR, RTS, 
+    PLP, JMP, JSR, RTS, BCC, BCS,
+    BEQ, BMI, BNE, BPL, BVC, BVS,
     *: Needs tests
 
     *** NOT IMPLEMENTED ***
-    BCC, BCS, BEQ, BMI, BNE, BPL,
-    BVC, BVS, BRK, RTI,
+    
+    BRK, RTI,
 */
 
 Mpu6502::Mpu6502() // {{{
