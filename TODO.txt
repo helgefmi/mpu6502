@@ -1,0 +1,17 @@
+Add support for:
+- Decimal mode
+- Clock cycles
+- Observer Pattern in Memory
+    * Implement a simpel monitor and run code from 6502asm.com ?
+- Intel HEX and SREC format
+- Running binaries :)
+
+Refactor:
+- Mpu6502::step():
+    * Try to cut down on 'set_nz_flag' and 'reg.pc += 1' somehow
+    * Perhaps prefetch ubyte/uword with values, according to a lookup table (like with cycles now)?
+- TestSuite:
+    * Set up the MPU's memory/register before we start executing
+    * Allow for asserts like 'assert reg.ac reg.x'
+    * Allow for specifying origin of executable code
+    * Create some other method of testing; perhaps port a testsuit from another emulator? Py65?
