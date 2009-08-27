@@ -36,13 +36,21 @@ void TestSuite::run(const std::string &path) // {{{
 
     successive_tests = 0;
     failed_tests = 0;
-    for (fs::basic_recursive_directory_iterator<fs::path> it(fs_path), end; it != end; ++it)
+
+    if (fs::is_directory(fs_path))
     {
-        if (fs::extension(*it) == ".t")
+        for (fs::basic_recursive_directory_iterator<fs::path> it(fs_path), end; it != end; ++it)
         {
-            fs::path it_path(it->path());
-            test_file(it_path);
+            if (fs::extension(*it) == ".t")
+            {
+                fs::path fs_path(it->path());
+                test_file(fs_path);
+            }
         }
+    }
+    else
+    {
+        test_file(fs_path);
     }
 
     std::cout << std::endl << "Failed " << failed_tests << "/" << (failed_tests + successive_tests) << " tests" << std::endl;
@@ -118,7 +126,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
     out << code;
     out.close();
 
-    bool compile_success = (0 == system("xa -CW asm.tmp"));
+    bool compile_success = (0 == system("xa -CW -bt0 asm.tmp"));
     if (!compile_success)
     {
         std::cerr << "Couldn't compile test:" << std::endl;
@@ -129,7 +137,7 @@ bool TestSuite::run_test(const std::string &code, const std::vector<std::string>
 
     /* Load the contents into the MPU */
     mpu_ptr->reset();
-    mpu_ptr->load_binary_file("a.o65");
+    mpu_ptr->load_binary_file("a.o65", 0);
 
     unlink("asm.tmp");
     unlink("a.o65");

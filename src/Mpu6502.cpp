@@ -34,7 +34,7 @@ Mpu6502::~Mpu6502() // {{{
     delete mem_ptr;
 } // }}}
 
-void Mpu6502::load_binary_file(const std::string &filename) // {{{
+void Mpu6502::load_binary_file(const std::string &filename, uint16_t org) // {{{
 {
     std::ifstream ifs(filename.c_str(), std::iostream::binary | std::iostream::ate);
 
@@ -44,8 +44,10 @@ void Mpu6502::load_binary_file(const std::string &filename) // {{{
         return;
     }
 
+    mem_ptr->set_word(0xFFFC, org);
+
     /* Move the contents of the file into an array */
-    mem_ptr->copy_from_istream(ifs);
+    mem_ptr->copy_from_istream(ifs, org);
     ifs.close();
 } // }}}
 void Mpu6502::reset() // {{{
@@ -61,6 +63,7 @@ void Mpu6502::reset() // {{{
 } // }}}
 void Mpu6502::run() // {{{
 {
+    reg.pc = mem_ptr->get_word(0xFFFC);
     while (true)
     {
         step();
@@ -791,6 +794,18 @@ void Mpu6502::step() // {{{
         /* }}} */
         /* NOP (1) {{{ */
         case 0xEA:
+            break;
+        /* }}} */
+        /* JMP (4) {{{ */
+        case 0x4C: // JMP ABS
+            uword = mem_ptr->get_absolute();
+            goto jmp_op;
+
+        case 0x6C:
+            uword = mem_ptr->get_word(mem_ptr->get_absolute());
+
+        jmp_op:
+            reg.pc = uword;
             break;
         /* }}} */
         default:

@@ -34,7 +34,7 @@ class Mpu6502 : public Mpu
         void reset();
         void step();
         void run();
-        void load_binary_file(const std::string&);
+        void load_binary_file(const std::string&, uint16_t);
 
         std::string to_string() const;
 
