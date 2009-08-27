@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Mpu6502.h"
 #include "Memory6502.h"
+#include "Util.h"
 #include "exceptions.h"
 #include "defines.h"
 
@@ -75,6 +76,7 @@ void Mpu6502::step() // {{{
     uint8_t ubyte, tmp;
     int8_t byte;
     uint16_t uword;
+    int16_t word;
     switch (opcode)
     {
         /* LDA (8) {{{ */
@@ -354,14 +356,32 @@ void Mpu6502::step() // {{{
         adc_op_1:
             reg.pc += 1;
 
+            if (reg.ps[FLAG_DECIMAL])
+                goto adc_decimal;
+
             uword = reg.ac + ubyte;
             if (reg.ps[FLAG_CARRY])
                 uword += 1;
 
+            word = (int8_t)reg.ac + (int8_t)ubyte + reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_OVERFLOW] = (word > 0x7f || word < -0x80);
+
             reg.ps[FLAG_CARRY] = (uword > 0xFF);
-            reg.ps[FLAG_OVERFLOW] = ((int8_t)reg.ac + (int8_t)ubyte > 0x7f || (int8_t)reg.ac + (int8_t)ubyte < -0x80);
 
             reg.ac = uword;
+            set_nz_flags(reg.ac);
+            break;
+
+        adc_decimal:
+            uword = Util::bcd2bin(reg.ac) + Util::bcd2bin(ubyte);
+            if (reg.ps[FLAG_CARRY])
+                uword += 1;
+
+            reg.ps[FLAG_CARRY] = reg.ps[FLAG_OVERFLOW] = (uword > 99);
+            if (reg.ps[FLAG_CARRY])
+                uword -= 100;
+
+            reg.ac = Util::bin2bcd(uword);
             set_nz_flags(reg.ac);
             break;
         /* }}} */
@@ -396,14 +416,34 @@ void Mpu6502::step() // {{{
         sbc_op_1:
             reg.pc += 1;
 
+            if (reg.ps[FLAG_DECIMAL])
+                goto sbc_decimal;
+
             uword = reg.ac - ubyte;
-            if (reg.ps[FLAG_CARRY])
+            if (!reg.ps[FLAG_CARRY])
                 uword -= 1;
 
+            word = (int8_t)reg.ac - (int8_t)ubyte - (int8_t)!reg.ps[FLAG_CARRY];
+            reg.ps[FLAG_OVERFLOW] = (word > 0x7f || word < -0x80);
+
             reg.ps[FLAG_CARRY] = (uword < 0x100);
-            reg.ps[FLAG_OVERFLOW] = ((int8_t)reg.ac - (int8_t)ubyte > 0x7f || (int8_t)reg.ac - (int8_t)ubyte < -0x80);
 
             reg.ac = uword;
+            set_nz_flags(reg.ac);
+            break;
+
+        sbc_decimal:
+            word = Util::bcd2bin(reg.ac) - Util::bcd2bin(ubyte);
+            if (!reg.ps[FLAG_CARRY])
+                word -= 1;
+
+            reg.ps[FLAG_CARRY] = word >= 0;
+            reg.ps[FLAG_OVERFLOW] = 0;
+
+            if (word < 0)
+                word += 100;
+
+            reg.ac = Util::bin2bcd(word);
             set_nz_flags(reg.ac);
             break;
         /* }}} */

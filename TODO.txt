@@ -1,5 +1,4 @@
 Add support for:
-- Decimal mode
 - Clock cycles
 - Observer Pattern in Memory
     * Implement a simpel monitor and run code from 6502asm.com ?
@@ -15,3 +14,7 @@ Refactor:
     * Allow for asserts like 'assert reg.ac reg.x'
     * Allow for specifying origin of executable code
     * Create some other method of testing; perhaps port a testsuit from another emulator? Py65?
+
+Add tests for:
+- More complex tests, like computing primes or something
+- I don't think there's any tests for SBC/ADC when we already have carry/borrow

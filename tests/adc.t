@@ -110,3 +110,12 @@ test adc ind y
     .byte 2
 assert reg.p 15
 assert reg.ac 0x80
+
+
+test adc carry makes overflow
+    SEC
+    LDA #$7E
+    ADC #1
+    .byte 2
+assert flags.v 1
+assert flags.c 0

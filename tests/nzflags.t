@@ -112,17 +112,19 @@ assert flags.z 0
 
 test sbc_imm_nzflag
     LDA #$80
+    SEC
     SBC #$80
     .byte $2
-assert reg.p 5
+assert reg.p 6
 assert flags.n 0
 assert flags.z 1
 
 test sbc_imm_nzflag
     LDA #$80
+    SEC
     SBC #$81
     .byte $2
-assert reg.p 5
+assert reg.p 6
 assert flags.n 1
 assert flags.z 0
 
