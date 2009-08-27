@@ -808,6 +808,18 @@ void Mpu6502::step() // {{{
             reg.pc = uword;
             break;
         /* }}} */
+        /* JSR (4) {{{ */
+        case 0x20: // JSR ABS
+            uword = mem_ptr->get_absolute();
+            push_to_stack(reg.pc + 1);
+            reg.pc = uword;
+            break;
+        /* }}} */
+        /* RTS (4) {{{ */
+        case 0x60: // RTS ABS
+            reg.pc = pull_from_stack() + 1;
+            break;
+        /* }}} */
         default:
             throw InvalidOpcodeException(opcode);
     }
