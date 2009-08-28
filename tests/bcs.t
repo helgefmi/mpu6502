@@ -3,7 +3,7 @@ test bcs dont_branch label
     LDX #$AB
     .byte 2
 
-label
+label:
     LDY #$AB
     .byte 2
 assert reg.x 0xAB
@@ -16,7 +16,7 @@ test bcs do_branch label
     LDX #$AB
     .byte 2
 
-label
+label:
     LDY #$AB
     .byte 2
 assert reg.x 0x0

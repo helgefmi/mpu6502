@@ -2,7 +2,7 @@ test rts simple
     LDX #$AB
     JSR incme
     .byte 2
-incme
+incme:
     INX
     RTS
 assert reg.x 0xAC
@@ -13,21 +13,21 @@ test rts advanced
     LDX #$AB
     JSR one
     .byte 2
-one
+one:
     INX
     JSR two
     RTS
     .byte 2
-two
+two:
     INY
     JSR three
     NOP
     RTS
     .byte 2
-three
+three:
     ADC #1
     RTS
-incme
+incme:
     INX
     RTS
     .byte 2

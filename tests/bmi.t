@@ -5,7 +5,7 @@ test bmi do_branch label
     LDX #$AB
     .byte 2
 
-label
+label:
     LDY #$AB
     .byte 2
 assert reg.y 0xAB
@@ -18,7 +18,7 @@ test bmi dont_branch label
     LDX #$AB
     .byte 2
 
-label
+label:
     LDY #$AB
     .byte 2
 assert reg.y 0x0

@@ -1,7 +1,8 @@
 test jmp abs
     JMP end
     LDA #$AB
-    end .byte 2
+end:
+    .byte 2
 assert reg.a 0
 
 test jmp abs 2
@@ -11,7 +12,8 @@ test jmp abs 2
     SED
     SEI
     LDA #$0
-    end .byte 2
+end:
+    .byte 2
 assert reg.a 0xAB
 assert flags.c 0
 assert flags.d 0
@@ -23,7 +25,8 @@ test jmp ind
     LDA #0
     JMP ($AB)
     LDA #$AB
-    end .byte 2
+end:
+    .byte 2
 assert reg.a 0
 
 test jmp ind 2
@@ -35,7 +38,8 @@ test jmp ind 2
     SED
     SEI
     LDA #$0
-    end .byte 2
+end:
+    .byte 2
 assert reg.a 0xAB
 assert flags.c 0
 assert flags.d 0

@@ -5,11 +5,11 @@ test brk simple
     BRK
     .byte 2
 
-label1
+label1:
     LDY #$AB
     .byte 2
 
-label2
+label2:
     LDX #$AB
     .byte 2
 assert reg.p 10
@@ -26,11 +26,11 @@ test brk simple2
     BRK
     .byte 2
 
-label1
+label1:
     LDY #$AB
     .byte 2
 
-label2
+label2:
     LDX #$AB
     .byte 2
 assert reg.p 13
@@ -49,11 +49,11 @@ test brk flags
     BRK
     .byte 2
 
-label1
+label1:
     LDY #$AB
     .byte 2
 
-label2
+label2:
     LDX #$AB
     .byte 2
 assert reg.p 14
