@@ -7,21 +7,6 @@
 #include "exceptions.h"
 #include "defines.h"
 
-/*
-    *** OPCODES ***
-    LDA, LDX, LDY, STA, STX, STY,
-    AND, ORA, EOR, TAX, TAY, TSX,
-    TXA, TXS, TYA, CLC, CLD, CLI,
-    CLV, SEC, SED, SEI, BIT, NOP,
-    INC, INX, INY, DEC, DEX, DEY,
-    ADC, SBC, CMP, CPX, CPY, ROL,
-    ROR, ASL, LSR, PHA, PHP, PLA,
-    PLP, JMP, JSR, RTS, BCC, BCS,
-    BEQ, BMI, BNE, BPL, BVC, BVS,
-    BRK, RTI,
-    
-*/
-
 Mpu6502::Mpu6502() // {{{
 {
     this->mem_ptr = new Memory6502(this);
@@ -39,7 +24,7 @@ void Mpu6502::load_binary_file(const std::string &filename, uint16_t org) // {{{
     if (!ifs.is_open())
     {
         std::cerr << "Couldn't open file " << filename << std::endl;
-        return;
+        throw std::exception();
     }
 
     mem_ptr->set_word(0xFFFC, org);
@@ -889,7 +874,7 @@ void Mpu6502::step() // {{{
             push_to_stack(reg.pc);
             push_to_stack(reg.ps.to_ulong());
 
-            reg.pc = mem_ptr->get_word(0xFFFE);;
+            reg.pc = mem_ptr->get_word(0xFFFE);
             reg.ps[FLAG_BREAK] = 1;
             break;
         /* }}} */

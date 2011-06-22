@@ -1,7 +1,7 @@
 Add support for:
 - Clock cycles
 - Observer Pattern in Memory
-    * Implement a simpel monitor and run code from 6502asm.com ?
+    * Implement a simple monitor and run code from 6502asm.com ?
 - Intel HEX and SREC format
 - Running binaries :)
 

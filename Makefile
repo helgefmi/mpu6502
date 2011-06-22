@@ -1,5 +1,5 @@
 CC=g++
-CPPFLAGS=-O3 -Wall -Wextra -lboost_program_options-mt -lboost_filesystem-mt
+CPPFLAGS=-O2 -g3 -Wall -Wextra -lboost_program_options -lboost_filesystem
 
 SRC=src/Mpu6502.o src/main.o src/TestSuite.o src/Util.o
 TARGET=mpu6502

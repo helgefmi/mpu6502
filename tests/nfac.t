@@ -47,5 +47,4 @@ mulx_top:
     BNE mulx_top
 
     RTS
-
 assert reg.ac 120

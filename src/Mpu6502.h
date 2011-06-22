@@ -5,6 +5,7 @@
 #include <string>
 #include <bitset>
 #include "Mpu.h"
+#include "Memory.h"
 #include "defines.h"
 
 typedef struct registers
@@ -35,6 +36,9 @@ class Mpu6502 : public Mpu
         void step();
         void run();
         void load_binary_file(const std::string&, uint16_t);
+
+        void subscribe_to_write(uint16_t, uint16_t, write_callback_t);
+        void subscribe_to_read(uint16_t, uint16_t, read_callback_t);
 
         std::string to_string() const;
 
@@ -68,4 +72,12 @@ inline uint8_t Mpu6502::pull_from_stack() // {{{
     return ret;
 } // }}}
 
+inline void Mpu6502::subscribe_to_write(uint16_t from_offset, uint16_t to_offset, write_callback_t fp) // {{{
+{
+    mem_ptr->subscribe_to_write(from_offset, to_offset, fp);
+} // }}}
+inline void Mpu6502::subscribe_to_read(uint16_t from_offset, uint16_t to_offset, read_callback_t fp) // {{{
+{
+    mem_ptr->subscribe_to_read(from_offset, to_offset, fp);
+} // }}}
 #endif

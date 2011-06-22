@@ -1,4 +1,5 @@
 #include "Util.h"
+#include <iostream>
 
 uint8_t Util::bcd2bin(const uint8_t bcd)
 {
@@ -40,4 +41,17 @@ uint8_t Util::bin2bcd(const uint8_t bin)
     };
 
     return bin2bcd_arr[bin];
+}
+
+void Util::std_cout_cb(const uint16_t offset, const uint8_t val)
+{
+    offset + 0; /* stop compiler whine */
+    std::cout << (char) val;
+    std::cout.flush();
+}
+
+uint8_t Util::std_getch_cb(const uint16_t offset)
+{
+    offset + 0; /* stop compiler whine */
+    return 16;
 }
